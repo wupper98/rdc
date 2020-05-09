@@ -1,6 +1,6 @@
 # Agrismart
-Agrismart è il progetto sviluppato da Andrea Andreani, Ermanno Bartoli, Gianluca De Carlo e Lorenzo Diaco per l'esame di Reti di calcolatori.  
-Agrismart è una web app che consente agli utenti di tenere sotto controllo il loro terreno  tracciandone umidità, temperatura ed eventi come l'innaffiamento (grazie a dei sensori appartenenti al mondo IOT) per permettere una gestione più responsabile ed efficace. Tutto questo è integrato con google calendar e con delle API prodotte da noi che consentiranno di ottenere l'intera lista degli eventi per poi utilizzarla a proprio piacimento.
+Agrismart è il progetto sviluppato da Andrea Andreani, Ermanno Bartoli, Gianluca De Carlo e Lorenzo Diaco per l'esame di Reti di Calcolatori.  
+Agrismart è una web app che consente agli utenti di tenere sotto controllo il loro terreno  tracciandone umidità, temperatura ed eventi come l'innaffiamento (grazie a dei sensori appartenenti al mondo IOT) per permettere una gestione più responsabile ed efficace. Tutto questo è integrato con Google Calendar e con delle API prodotte da noi che consentiranno all'utente di ottenere l'intera lista degli eventi per poi utilizzarla a proprio piacimento.
 
 ### Tech
 Agrismart utilizza molti progetti esterni per funzionare:
