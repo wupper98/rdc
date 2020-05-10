@@ -13,7 +13,9 @@ Agrismart utilizza molti progetti esterni per funzionare:
 * [Swagger] - Per fornire le nostre API
 
 ## Scelte progettuali
-Trattandosi di un progetto che integra componenti IOT e componenti web classiche, abbiamo optato per l'utilizzo di protocolli multipli. Vorremmo portare l'attenzione sulla scelta di MQTT come protocollo di comunicazione tra sensori e web app combinato al sistema di gestione delle code VerneMQ. Abbiamo optato per VerneMQ poichè fornisce un completo supporto per MQTT, a differenza di altri message broker che richiedevano l'installazione di third-party plugins. 
+### Comunicazione sensori - web app
+Per la comunicazione tra sensori e web app abbiamo optato per l'utilizzo del protocollo MQTT, particolarmente adatto ai dispositivi appartenenti al mondo IOT.  
+Per gestire i messaggi abbiamo applicato il paradigma publisher/subscriber utilizzando il message broker [VerneMQ] completamente compatibile con il protocollo MQTT.
 
 ### Installazione
 Per installare Agrismart è necessario clonare la repository
