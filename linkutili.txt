@@ -1,3 +1,8 @@
 websoket per gmaps: https://github.com/GikonyoBrian/websockets-googlemaps
 https://www.giardinihanbury.com/giardino/fioriture-mese
-piccolo tuto IoT NodeJs e MQTT: https://busy.org/@aneilpatel/iot-tutorial-series-1-getting-started-with-mqtt-and-node-js
+
+piccolo tuto IoT NodeJs e MQTT:
+https://busy.org/@aneilpatel/iot-tutorial-series-1-getting-started-with-mqtt-and-node-js
+
+IoT e NodeJs:
+https://medium.com/better-programming/how-to-design-a-complete-iot-solution-using-node-js-674787409e57
