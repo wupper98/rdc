@@ -6,3 +6,6 @@ https://busy.org/@aneilpatel/iot-tutorial-series-1-getting-started-with-mqtt-and
 
 IoT e NodeJs:
 https://medium.com/better-programming/how-to-design-a-complete-iot-solution-using-node-js-674787409e57
+
+CoAp e NodeJs:
+https://github.com/mcollina/node-coap
