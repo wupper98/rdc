@@ -9,3 +9,6 @@ https://medium.com/better-programming/how-to-design-a-complete-iot-solution-usin
 
 CoAp e NodeJs:
 https://github.com/mcollina/node-coap
+
+template:
+http://www.urbanui.com/fily/template/demo/vertical-default-light/index.html
