@@ -22,6 +22,10 @@ Per installare Agrismart è necessario clonare la repository
 ```sh
 $ git clone https://github.com/wupper98/rdc.git
 ```
+In seguito è necessario istanziare un container per RabbitMQ
+```sh
+$ docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
+```
 
 ### Test
 Per effettuare i test bisogna eseguire 2 semplici comandi
