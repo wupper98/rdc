@@ -18,20 +18,22 @@ Per la comunicazione tra sensori e web app abbiamo optato per l'utilizzo del pro
 Per gestire i messaggi abbiamo applicato il paradigma publisher/subscriber utilizzando il message broker [VerneMQ] completamente compatibile con il protocollo MQTT.
 
 ### Installazione
-Per installare Agrismart è necessario clonare la repository
+Per installare Agrismart è necessario clonare la repository ed installare le librerie
 ```sh
 $ git clone https://github.com/wupper98/rdc.git
+$ npm install
 ```
-In seguito è necessario istanziare un container per RabbitMQ
+
+
+### Test
+Per effettuare i test bisogna inizializzare un container per RabbitMQ
 ```sh
 $ docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
 ```
-
-### Test
-Per effettuare i test bisogna eseguire 2 semplici comandi
+Successivamente lanciare lo script test.sh in un altro terminale
 ```sh
-$ node ./agrismart
-$ node ./fieldsim
+$ chmod 777 test.sh
+$ ./test.sh
 ```
 
 
