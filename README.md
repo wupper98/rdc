@@ -24,16 +24,20 @@ $ git clone https://github.com/wupper98/rdc.git
 $ npm install
 ```
 
+### Esecuzione normale
+Per eseguire Agrismart senza avere una console intasata da log è sufficente eseguire il comando:
+```sh
+$ npm start
+```
 
 ### Test
-Per effettuare i test bisogna inizializzare un container per RabbitMQ
+Per effettuare i test bisogna inizializzare un container per rabbitMQ
 ```sh
 $ docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3-management
 ```
-Successivamente lanciare lo script test.sh in un altro terminale
+Successivamente lanciare npm test, così da ottenere numerosi log utili per la verifica delle funzioni eseguite
 ```sh
-$ chmod 777 test.sh
-$ ./test.sh
+$ npm test
 ```
 
 

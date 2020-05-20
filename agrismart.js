@@ -12,7 +12,16 @@ require('dotenv').config()
 
 const HTTP_OK = 200;
 const app = express();
-const PORT = process.env.PORT || 8888;
+const PORT = process.env.PORT;
+var TEST;
+switch (process.argv[2]) {
+	case 'true':
+		TEST = true;
+		break;
+	case 'false':
+		TEST = false;
+		break;
+}
 
 // https://api.openweathermap.org/data/2.5/onecall?lat={}&lon={}&exclude={}&appid=
 const OWM_URL_1 = 'https://api.openweathermap.org/data/2.5/onecall?'
@@ -69,7 +78,7 @@ passport.use(new GoogleStrategy(
 		callbackURL: 'http://localhost:' + PORT + '/auth/google/callback',
 		scope: ['email'],
 	}, (accessToken, refreshToken, profile, cb) => {
-		console.log('Our user authenticated with Google, and Google sent us back this profile info identifying the authenticated user:', profile);
+		if(TEST) console.log('Our user authenticated with Google, and Google sent us back this profile info identifying the authenticated user:', profile);
 		return cb(null, profile);
 	},
 ));
@@ -82,7 +91,7 @@ function KelvinToCelcius(k) {
 /*         Routing         */
 /***************************/
 
-app.get('/index', function (req, res) {
+app.get('/index', accessProtectionMiddleware, function (req, res) {
 	res.render('index.ejs', {port: PORT});
 });
 
@@ -93,20 +102,18 @@ app.get('/index', function (req, res) {
 app.get('/auth/google/callback',
 	passport.authenticate('google', { failureRedirect: '/', session: true }),
 	(req, res) => {
-		console.log('wooo we authenticated, here is our user object:', req.user);
+		if(TEST) 
+			console.log('we authenticated, here is our user object:', req.user);
 		// res.json(req.user);
 		res.redirect('/index');
 	}
 );
 
-app.get('/', accessProtectionMiddleware, (req, res) => {
-	res.json({
-		message: 'You have accessed the protected endpoint!',
-		yourUserInfo: req.user,
-	});
+app.get('/', (req, res) => {
+	res.redirect('/index');
 });
 
-app.post('/geolocation', function (req, res) {
+app.post('/geolocation', accessProtectionMiddleware, function (req, res) {
 	var latitude = req.body.latitude;
 	var longitude = req.body.longitude;
 	var url = OWM_URL_1 + 'lat=' + latitude
@@ -134,15 +141,12 @@ app.post('/geolocation', function (req, res) {
 			});
 
 		}
-		else {
-			console.log('ERROR');
-			res.render('404notfound.ejs', {port: PORT});
-		}
 	});
 });
 
 // Avvio del server
 var server = app.listen(PORT, function () {
+	if(TEST) console.log("[!] Output will be verbose, test mode on!");
 	console.log('[i] Agrismart su http://localhost:%s\n', PORT);
-	console.log(process.env.GOOGLE_OAUTH_TEST_APP_CLIENT_ID + "\n");
+	// console.log(process.env.GOOGLE_OAUTH_TEST_APP_CLIENT_ID + "\n");
 });
