@@ -57,7 +57,7 @@ const accessProtectionMiddleware = (req, res, next) => {
 	if (req.isAuthenticated()) {
 		next();
 	} else {
-		res.status(403).render('403forbidden.ejs');
+		res.status(403).render('403forbidden.ejs', {port: PORT});
 	}
 };
 
@@ -66,7 +66,7 @@ passport.use(new GoogleStrategy(
 	{
 		clientID: process.env.GOOGLE_OAUTH_TEST_APP_CLIENT_ID,
 		clientSecret: process.env.GOOGLE_OAUTH_TEST_APP_CLIENT_SECRET,
-		callbackURL: 'http://localhost:8888/auth/google/callback',
+		callbackURL: 'http://localhost:' + PORT + '/auth/google/callback',
 		scope: ['email'],
 	}, (accessToken, refreshToken, profile, cb) => {
 		console.log('Our user authenticated with Google, and Google sent us back this profile info identifying the authenticated user:', profile);
@@ -83,7 +83,7 @@ function KelvinToCelcius(k) {
 /***************************/
 
 app.get('/index', function (req, res) {
-	res.render('index.ejs');
+	res.render('index.ejs', {port: PORT});
 });
 
 // Create API endpoints
@@ -129,13 +129,14 @@ app.post('/geolocation', function (req, res) {
 				min: KelvinToCelcius(main.min),
 				max: KelvinToCelcius(main.max),
 				pressure: info.pressure,
-				humidity: info.humidity
+				humidity: info.humidity,
+				port: PORT
 			});
 
 		}
 		else {
 			console.log('ERROR');
-			res.end('404 NOT FOUND');
+			res.render('404notfound.ejs', {port: PORT});
 		}
 	});
 });
