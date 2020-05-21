@@ -80,3 +80,7 @@ h1 + p {
     transform: translate3d(0,0,0);
   }
 }
+
+a:link {color:#FF0000;}    /* unvisited link */
+a:visited {color:#0B614B;} /* visited link */
+a:hover {color:#B4045F;}   /* mouse over link */

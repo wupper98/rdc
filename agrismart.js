@@ -109,8 +109,13 @@ app.get('/auth/google/callback',
 	}
 );
 
+app.get('/logout', function(req, res) {
+	req.logout();
+	res.redirect('/');
+});
+
 app.get('/', (req, res) => {
-	res.redirect('/index');
+	res.render('home.ejs');
 });
 
 app.post('/geolocation', accessProtectionMiddleware, function (req, res) {
