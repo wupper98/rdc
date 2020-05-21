@@ -23,11 +23,11 @@ switch (process.argv[2]) {
 		break;
 }
 
-// https://api.openweathermap.org/data/2.5/onecall?lat={}&lon={}&exclude={}&appid=
+// Componenti URL openweather
 const OWM_URL_1 = 'https://api.openweathermap.org/data/2.5/onecall?'
 const OWM_URL_2 = '&appid=' + process.env.OWM_KEY;
 
-// https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/{lon,lat},14.25,0,45/600x600?access_token=
+// Componenti URL leaflet
 const LL_URL_1 = 'https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/';
 const LL_URL_2 = ',10,0,45/600x600?access_token=' + process.env.LL_KEY;
 

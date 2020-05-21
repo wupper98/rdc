@@ -1,5 +1,15 @@
-echo "[*] Starting the tests..."
+#!/bin/bash
 
-echo "[*] TEST 1 - Obtaining weather info from api using rabbitMQ as a message broker"
+for cmd in "$@"; do {
+    echo "Process \"$cmd\" started";
+    $cmd & pid=$!
+    PID_LIST+=" $pid";
+} done
 
-echo "done!"
+trap "kill $PID_LIST" SIGINT
+
+echo "Processes have been launched"
+
+wait $PID_LIST
+echo
+echo "All processes have completed"
