@@ -1,3 +1,7 @@
 <h1>Benvenuto su Agrismart</h1>
 <br>
-<a href="/auth/google/callback">Login</a> - <a href="/logout">Logout</a>
+<% if(auth){ %>
+    <a href="/logout">Logout</a>
+    <% } else{ %>  
+    <a href="/auth/google/callback">Login</a>
+ <% } %>
