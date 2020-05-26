@@ -8,6 +8,11 @@ const bodyparser = require('body-parser')
 const session = require('express-session')
 const GoogleStrategy = require('passport-google-oauth20').Strategy
 
+//Per le promise
+var Promise = require('promise');
+
+//Per async
+var async = require("async");
 
 var admin = require("firebase-admin");
 var serviceAccount = "private/agrismart-c2656-firebase-adminsdk-1en4p-ba81ef792e.json";
@@ -176,7 +181,9 @@ var server = app.listen(PORT, function () {
 
 
 
-// DATABASE FIREBASE
+/*************************************/
+/*         Database Firebase         */
+/*************************************/
 
 function createUser(email) { //creo l'utente
 	let instance = db.collection("users").doc(email);
@@ -219,3 +226,91 @@ function createInnaffiamento(email, campo, sensore, umidita, data) { //creo inna
 		console.log("Innaffiamento al sensore "+ sensore +" aggiunto al database dell'utente: "+ email);
 	});
 }
+
+//Questa funzione restituise i dati che sono presenti nel documento n-esimo_sensore. Per accedere ai dati all'interno
+//vedere sul database quali sono, nel nostro caso email e campo, quindi ci si accede (ad esempio email con .email)
+//Gestire poi errori nel caso il documento non esista o ci sia un errore (in caso negativo restituisce undefined)
+
+
+/*function getSensorefromIdAux(id){
+	let documento= db.collection("sensors").doc(id);
+	return documento.get();
+}
+
+function promise2(doc){
+		if (!doc.exists) {
+		console.log('No such document!');
+		const result =  new Promise((resolve)=>{
+			resolve("errore");
+		});
+		return result;
+		} else {
+			console.log('Document data:', doc.data());
+			const result =  new Promise((resolve)=>{
+				resolve(doc.data());
+			});
+			return result;
+		}
+}
+
+function getSensorefromId(id){
+	return getSensorefromIdAux(id)
+	.then(promise2)
+	.catch((err) => console.log(err));
+}
+
+function getUltimiInnaffiamentiSensore(id){
+	getSensorefromId(id)
+	.then((x) => {
+		if (x != "errore"){
+			//Qui devo cercare l'utente
+			let documento = db.collection("users").doc(x.email).collection("campi").doc(x.campo).collection("sensori").doc(id).collection("innaffiamenti").get()
+			.then(function(snapshot) {
+				snapshot.forEach(function(userSnapshot) {
+				  console.log(userSnapshot.data().data);
+				});
+			  });
+		}
+	});
+}
+
+function getnomesensorefromId(id){
+	getSensorefromId(id)
+	.then((x) => {
+		if (x != "errore"){
+		//Qui devo cercare l'utente
+		let documento = db.collection("users").doc(x.email).collection("campi").doc(x.campo).collection("sensori").doc(id).get()
+		.then( (x) => {
+			console.log(x.data().name);
+			return x.data().name;
+		});		
+		}
+		else{
+			return "Errore";
+		}
+	})
+}*/
+
+
+function myFirstFunction(id,callback){
+	let documento= db.collection("sensors").doc(id).get();
+	callback(null,documento);
+}
+function mySecondFunction(doc, callback){
+	let x = doc.then(callback);
+}
+function myLastFunction(arg1, callback){
+	console.log(arg1);
+	callback(null, "done");
+}
+
+app.get('/prova', (req, res) => {
+	async.waterfall([
+		myFirstFunction("ID123883"),
+		mySecondFunction,
+		myLastFunction,
+	], function (err, result) {
+		res.send("porcacciodio");
+	});
+	
+});
