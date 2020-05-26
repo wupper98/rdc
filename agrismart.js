@@ -292,25 +292,38 @@ function getnomesensorefromId(id){
 }*/
 
 
-function myFirstFunction(id,callback){
-	let documento= db.collection("sensors").doc(id).get();
-	callback(null,documento);
+function getSensoreFromId(id, callback){
+	db.collection("sensors").doc(id).get().then((x) => {
+		if (!x.exists) {
+			console.log('No such document!');
+			callback("ERRORE");
+		} else {
+			console.log('Document data: ', x.data());
+			callback(null, x.data(), id);
+		}
+	});
 }
-function mySecondFunction(doc, callback){
-	let x = doc.then(callback);
+
+function getInnaffiamentiFromDocumento(data, id, callback){
+	var keys = Array();
+	db.collection("users").doc(data.email).collection("campi").doc(data.campo).collection("sensori").doc(id).collection("innaffiamenti").get().then(function(snapshot) {
+		snapshot.forEach(function(userSnapshot) {
+			keys.push(userSnapshot.data().data);
+		});
+		callback(null, keys);
+	});
 }
-function myLastFunction(arg1, callback){
-	console.log(arg1);
-	callback(null, "done");
+
+function getInnaffiamentiFromSensorID(id, callback) {
+	async.waterfall([
+		async.apply(getSensoreFromId, id),
+		getInnaffiamentiFromDocumento,
+	], callback);
 }
 
 app.get('/prova', (req, res) => {
-	async.waterfall([
-		myFirstFunction("ID123883"),
-		mySecondFunction,
-		myLastFunction,
-	], function (err, result) {
-		res.send("porcacciodio");
+	getInnaffiamentiFromSensorID("ID123883", function (err, result) {
+		if(err != null) res.send(err);
+		else res.send(result);
 	});
-	
 });
