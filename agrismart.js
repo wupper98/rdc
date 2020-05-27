@@ -113,9 +113,9 @@ function KelvinToCelcius(k) {
 function createUser(email) { //creo l'utente
 	let instance = db.collection("users").doc(email);
 	instance.create({}).then(function() {
-		console.log("Utente aggiunto al database: "+ email);
+		if(TEST) console.log("Utente aggiunto al database: "+ email);
 	}).catch((err) => {
-		console.log("Utente già registrato: "+ email);
+		if(TEST) console.log("Utente già registrato: "+ email);
 	});
 
 	// campicounter serve per tenere traccia dell'indice da dare al campo
