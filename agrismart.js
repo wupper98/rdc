@@ -188,9 +188,9 @@ var server = app.listen(PORT, function () {
 function createUser(email) { //creo l'utente
 	let instance = db.collection("users").doc(email);
 	instance.create({}).then(function() {
-			console.log("Utente aggiunto al database: "+ email);
+			if(TEST) console.log("Utente aggiunto al database: "+ email);
 		}).catch((err) => {
-			console.log("Utente già registrato: "+ email);
+			if(TEST) console.log("Utente già registrato: "+ email);
 		});
 }
 
@@ -199,7 +199,7 @@ function createCampo(email, name, lat, lon) { //creo il campo per l'utente
 		lat: lat,
 		lon: lon,
 	}).then(function() {
-		console.log("Campo "+ name +" aggiunto al database dell'utente: "+ email);
+		if(TEST) console.log("Campo "+ name +" aggiunto al database dell'utente: "+ email);
 	});
 }
 
@@ -207,14 +207,14 @@ function createSensore(email, campo, id, name) { //creo il sensore sia nella sua
 	db.collection("users").doc(email).collection("campi").doc(campo).collection("sensori").doc(id).create({
 		name: name,
 	}).then(function() {
-		console.log("Sensore "+ id +" aggiunto al database dell'utente: "+ email);
+		if(TEST) console.log("Sensore "+ id +" aggiunto al database dell'utente: "+ email);
 	});
 
 	db.collection("sensors").doc(id).create({
 		email: email,
 		campo: campo,
 	}).then(function() {
-		console.log("Sensore "+ id +" aggiunto al database dei sensori con riferimento a: "+ email);
+		if(TEST) console.log("Sensore "+ id +" aggiunto al database dei sensori con riferimento a: "+ email);
 	});
 }
 
@@ -223,7 +223,7 @@ function createInnaffiamento(email, campo, sensore, umidita, data) { //creo inna
 		umidita: umidita,
 		data: data,
 	}).then(function() {
-		console.log("Innaffiamento al sensore "+ sensore +" aggiunto al database dell'utente: "+ email);
+		if(TEST) console.log("Innaffiamento al sensore "+ sensore +" aggiunto al database dell'utente: "+ email);
 	});
 }
 
@@ -295,10 +295,10 @@ function getnomesensorefromId(id){
 function getSensoreFromId(id, callback){
 	db.collection("sensors").doc(id).get().then((x) => {
 		if (!x.exists) {
-			console.log('No such document!');
+			if(TEST) console.log('No such document!');
 			callback("ERRORE");
 		} else {
-			console.log('Document data: ', x.data());
+			if(TEST) console.log('Document data: ', x.data());
 			callback(null, x.data(), id);
 		}
 	});
