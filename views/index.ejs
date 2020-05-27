@@ -7,13 +7,13 @@
 </head>
 <body>
     <h1>Benvenuto, <%= nomeutente %></h1>
-    <h2>Inserisci la città di cui vuoi più informazioni</h2>
+    <h2>Inserisci le coordinate del tuo campo</h2>
     <form action="http://localhost:<%= port %>/dashboard" method="post">
-        Città:
+        Latitudine:
         <br>
         <input type="text" name="latitude" value="0">
         <br>
-        Nazione (it, gb, fr, ...):
+        Longitudine:
         <br>
         <input type="text" name="longitude" value="0">
         <br>
