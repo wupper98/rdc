@@ -120,7 +120,7 @@ app.get('/auth/google/callback',
 	passport.authenticate('google', { failureRedirect: '/', session: true }),
 	(req, res) => {
 		if(TEST) 
-			console.log('we authenticated, here is our user object:', req.user);
+			if(TEST) console.log('we authenticated, here is our user object:', req.user);
 
 		//mytest
 		createUser(req.user.emails[0].value);	
