@@ -223,13 +223,6 @@ function getnomesensorefromId(id){
 	})
 }*/
 
-function userExists(id) {
-	db.collection("users").doc(id).get().then((x) => {
-		if(x.exists) true;
-		else false;
-	});
-}
-
 function getSensoreFromId(id, callback){
 	db.collection("sensors").doc(id).get().then((x) => {
 		if (!x.exists) {
@@ -271,13 +264,15 @@ app.get('/prova', (req, res) => {
 
 app.get('/index', accessProtectionMiddleware, function (req, res) {
 	var umail = req.user.emails[0].value;
-	if(userExists(umail)) {
-		console.log("[!] Implementare get /dashboard");
-	} 
-	else {
-		createUser(umail);
-		res.render('index.ejs', {port: PORT, nomeutente: umail});
-	}
+	db.collection("users").doc(umail).get().then((x) => {
+		if(x.exists) {
+			console.log("[!] Implementare get /dashboard");
+		}
+		else {
+			createUser(umail);
+			res.render('index.ejs', {port: PORT, nomeutente: umail});
+		}
+	});
 });
 
 // Create API endpoints
@@ -303,42 +298,69 @@ app.get('/', (req, res) => {
 	res.render('home.ejs', {auth: req.isAuthenticated()});
 });
 
+app.get('/dashboard', function(req, res) {
+
+})
+
 app.post('/dashboard', accessProtectionMiddleware, function (req, res) {
 	var latitude = req.body.latitude;
 	var longitude = req.body.longitude;
 	var umail = req.user.emails[0].value;
+	
+	/* 
+	currentUser è un riferimento al "percorso" dell'oggetto
+	currentUser permette di modificare ciò che è in firebase:
+	update, get, bla bla bla
+	userInstance invece è l'oggetto preso dal db e da lui posso
+	accedere ai dati
+	*/
+	var currentUser = db.collection("users").doc(umail)
 
-	createCampo(umail, "campo1", latitude, longitude);
-	createSensore(umail, "campo1", "ID123883", "nomesensore");
-	createInnaffiamento(umail, "campo1", "ID123883", "1.3", "2019-02-20");
+	currentUser.get().then((userInstance) => {
+		var cid = userInstance.data().campicounter + 1;
+		var nomeCampo = "campo" + cid.toString();
+		console.log(nomeCampo);
+
+		currentUser.update({
+			"campicounter": cid
+		}).then(() => {
+			if(TEST) console.log("[+] campicounter aggiornato");
+		}).catch((error) => {
+			console.log(error);
+		});
+		console.log("sono quie")
+		createCampo(umail, nomeCampo, latitude, longitude);
+		createSensore(umail, nomeCampo, "ID123883", "nomesensore");
+		createInnaffiamento(umail, nomeCampo, "ID123883", "1.3", "2019-02-20");
 		
-
-	var url = OWM_URL_1 + 'lat=' + latitude
+		
+		var url = OWM_URL_1 + 'lat=' + latitude
 		+ '&lon=' + longitude + '&exclude=' + 'minutely,hourly,current' + OWM_URL_2
-
-	request(url, function (error, response, body) {
-		if (!error && response.statusCode == HTTP_OK) {
-
-			var info = JSON.parse(body).daily[0];
-			var main = info.temp;
-			var weather = info.weather[0].description;
-			var map_url = LL_URL_1 + longitude + ',' + latitude + LL_URL_2;
-
-			res.render('dashboard.ejs', {
-				lat: latitude,
-				lon: longitude,
-				weather: weather,
-				temp: KelvinToCelcius(main.day),
-				feels_like: KelvinToCelcius(info.feels_like.day),
-				min: KelvinToCelcius(main.min),
-				max: KelvinToCelcius(main.max),
-				pressure: info.pressure,
-				humidity: info.humidity,
-				port: PORT
-			});
-
-		}
-	});
+		
+		request(url, function (error, response, body) {
+			if (!error && response.statusCode == HTTP_OK) {
+				
+				var info = JSON.parse(body).daily[0];
+				var main = info.temp;
+				var weather = info.weather[0].description;
+				// var map_url = LL_URL_1 + longitude + ',' + latitude + LL_URL_2;
+				
+				res.render('dashboard.ejs', {
+					lat: latitude,
+					lon: longitude,
+					weather: weather,
+					temp: KelvinToCelcius(main.day),
+					feels_like: KelvinToCelcius(info.feels_like.day),
+					min: KelvinToCelcius(main.min),
+					max: KelvinToCelcius(main.max),
+					pressure: info.pressure,
+					humidity: info.humidity,
+					port: PORT
+				});
+				
+			}
+		});
+	}).catch(function() {});
 });
 
 // Avvio del server
