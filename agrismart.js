@@ -8,6 +8,22 @@ const bodyparser = require('body-parser')
 const session = require('express-session')
 const GoogleStrategy = require('passport-google-oauth20').Strategy
 
+//Per le promise
+var Promise = require('promise');
+
+//Per async
+var async = require("async");
+
+var admin = require("firebase-admin");
+var serviceAccount = "private/agrismart-c2656-firebase-adminsdk-1en4p-ba81ef792e.json";
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://agrismart-c2656.firebaseio.com"
+});
+
+let db = admin.firestore();
+
+
 require('dotenv').config()
 
 const HTTP_OK = 200;
@@ -79,6 +95,7 @@ passport.use(new GoogleStrategy(
 		scope: ['email'],
 	}, (accessToken, refreshToken, profile, cb) => {
 		if(TEST) console.log('Our user authenticated with Google, and Google sent us back this profile info identifying the authenticated user:', profile);
+
 		return cb(null, profile);
 	},
 ));
@@ -92,7 +109,7 @@ function KelvinToCelcius(k) {
 /***************************/
 
 app.get('/index', accessProtectionMiddleware, function (req, res) {
-	res.render('index.ejs', {port: PORT});
+	res.render('index.ejs', {port: PORT, nomeutente: req.user.emails[0].value});
 });
 
 // Create API endpoints
@@ -104,7 +121,13 @@ app.get('/auth/google/callback',
 	(req, res) => {
 		if(TEST) 
 			console.log('we authenticated, here is our user object:', req.user);
-		// res.json(req.user);
+
+		//mytest
+		createUser(req.user.emails[0].value);	
+		createCampo(req.user.emails[0].value, "campo1", 42, 12);
+		createSensore(req.user.emails[0].value, "campo1", "ID123883", "nomesensore");
+		createInnaffiamento(req.user.emails[0].value, "campo1", "ID123883", "1.3", "2019-02-20");
+			
 		res.redirect('/index');
 	}
 );
@@ -154,4 +177,153 @@ var server = app.listen(PORT, function () {
 	if(TEST) console.log("[!] Output will be verbose, test mode on!");
 	console.log('[i] Agrismart su http://localhost:%s\n', PORT);
 	// console.log(process.env.GOOGLE_OAUTH_TEST_APP_CLIENT_ID + "\n");
+});
+
+
+
+/*************************************/
+/*         Database Firebase         */
+/*************************************/
+
+function createUser(email) { //creo l'utente
+	let instance = db.collection("users").doc(email);
+	instance.create({}).then(function() {
+			console.log("Utente aggiunto al database: "+ email);
+		}).catch((err) => {
+			console.log("Utente già registrato: "+ email);
+		});
+}
+
+function createCampo(email, name, lat, lon) { //creo il campo per l'utente
+	db.collection("users").doc(email).collection("campi").doc(name).set({
+		lat: lat,
+		lon: lon,
+	}).then(function() {
+		console.log("Campo "+ name +" aggiunto al database dell'utente: "+ email);
+	});
+}
+
+function createSensore(email, campo, id, name) { //creo il sensore sia nella sua tabella, sia per il rispettivo utente
+	db.collection("users").doc(email).collection("campi").doc(campo).collection("sensori").doc(id).create({
+		name: name,
+	}).then(function() {
+		console.log("Sensore "+ id +" aggiunto al database dell'utente: "+ email);
+	});
+
+	db.collection("sensors").doc(id).create({
+		email: email,
+		campo: campo,
+	}).then(function() {
+		console.log("Sensore "+ id +" aggiunto al database dei sensori con riferimento a: "+ email);
+	});
+}
+
+function createInnaffiamento(email, campo, sensore, umidita, data) { //creo innaffiamento
+	db.collection("users").doc(email).collection("campi").doc(campo).collection("sensori").doc(sensore).collection("innaffiamenti").add({
+		umidita: umidita,
+		data: data,
+	}).then(function() {
+		console.log("Innaffiamento al sensore "+ sensore +" aggiunto al database dell'utente: "+ email);
+	});
+}
+
+//Questa funzione restituise i dati che sono presenti nel documento n-esimo_sensore. Per accedere ai dati all'interno
+//vedere sul database quali sono, nel nostro caso email e campo, quindi ci si accede (ad esempio email con .email)
+//Gestire poi errori nel caso il documento non esista o ci sia un errore (in caso negativo restituisce undefined)
+
+
+/*function getSensorefromIdAux(id){
+	let documento= db.collection("sensors").doc(id);
+	return documento.get();
+}
+
+function promise2(doc){
+		if (!doc.exists) {
+		console.log('No such document!');
+		const result =  new Promise((resolve)=>{
+			resolve("errore");
+		});
+		return result;
+		} else {
+			console.log('Document data:', doc.data());
+			const result =  new Promise((resolve)=>{
+				resolve(doc.data());
+			});
+			return result;
+		}
+}
+
+function getSensorefromId(id){
+	return getSensorefromIdAux(id)
+	.then(promise2)
+	.catch((err) => console.log(err));
+}
+
+function getUltimiInnaffiamentiSensore(id){
+	getSensorefromId(id)
+	.then((x) => {
+		if (x != "errore"){
+			//Qui devo cercare l'utente
+			let documento = db.collection("users").doc(x.email).collection("campi").doc(x.campo).collection("sensori").doc(id).collection("innaffiamenti").get()
+			.then(function(snapshot) {
+				snapshot.forEach(function(userSnapshot) {
+				  console.log(userSnapshot.data().data);
+				});
+			  });
+		}
+	});
+}
+
+function getnomesensorefromId(id){
+	getSensorefromId(id)
+	.then((x) => {
+		if (x != "errore"){
+		//Qui devo cercare l'utente
+		let documento = db.collection("users").doc(x.email).collection("campi").doc(x.campo).collection("sensori").doc(id).get()
+		.then( (x) => {
+			console.log(x.data().name);
+			return x.data().name;
+		});		
+		}
+		else{
+			return "Errore";
+		}
+	})
+}*/
+
+
+function getSensoreFromId(id, callback){
+	db.collection("sensors").doc(id).get().then((x) => {
+		if (!x.exists) {
+			console.log('No such document!');
+			callback("ERRORE");
+		} else {
+			console.log('Document data: ', x.data());
+			callback(null, x.data(), id);
+		}
+	});
+}
+
+function getInnaffiamentiFromDocumento(data, id, callback){
+	var keys = Array();
+	db.collection("users").doc(data.email).collection("campi").doc(data.campo).collection("sensori").doc(id).collection("innaffiamenti").get().then(function(snapshot) {
+		snapshot.forEach(function(userSnapshot) {
+			keys.push(userSnapshot.data().data);
+		});
+		callback(null, keys);
+	});
+}
+
+function getInnaffiamentiFromSensorID(id, callback) {
+	async.waterfall([
+		async.apply(getSensoreFromId, id),
+		getInnaffiamentiFromDocumento,
+	], callback);
+}
+
+app.get('/prova', (req, res) => {
+	getInnaffiamentiFromSensorID("ID123883", function (err, result) {
+		if(err != null) res.send(err);
+		else res.send(result);
+	});
 });
