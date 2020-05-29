@@ -223,6 +223,10 @@ function getnomesensorefromId(id){
 	})
 }*/
 
+/************************************/
+/*         DB - getSensore          */
+/************************************/
+
 function getSensoreFromId(id, callback){
 	db.collection("sensors").doc(id).get().then((x) => {
 		if (!x.exists) {
@@ -235,6 +239,8 @@ function getSensoreFromId(id, callback){
 	});
 }
 
+
+
 function getInnaffiamentiFromDocumento(data, id, callback){
 	var keys = Array();
 	db.collection("users").doc(data.email).collection("campi").doc(data.campo).collection("sensori").doc(id).collection("innaffiamenti").get().then(function(snapshot) {
@@ -245,21 +251,91 @@ function getInnaffiamentiFromDocumento(data, id, callback){
 	});
 }
 
-function getInnaffiamentiFromSensorID(id, callback) {
-	async.waterfall([
-		async.apply(getSensoreFromId, id),
-		getInnaffiamentiFromDocumento,
-	], callback);
+function getInnaffiamentiFromSensorID(id) {
+	return new Promise(function(resolve, reject) {
+		async.waterfall([
+			async.apply(getSensoreFromId, id),
+			getInnaffiamentiFromDocumento,
+		], (err, result) => {
+			if(err != null) reject(err);
+			else resolve(result);
+		});
+	});
+}
+
+/****************************************/
+/*         DB - getAllSensori           */
+/****************************************/
+
+//Ritorna una lista di ID => Stringhe, da cui si accede al sensore per: getSensoreFromID
+function getAllSensori(){
+	return new Promise(function(resolve,reject){
+		var keys = Array();
+	db.collection("sensors").get().then(function(snapshot) {
+		snapshot.forEach(function(userSnapshot) {
+			keys.push(userSnapshot.id);
+		});
+		resolve(keys);
+	}).catch((y) => reject(y));
+	});
+}
+
+function getCampiFromUtente(email){
+	return new Promise(function(resolve,reject){
+		var keys = Array();
+		db.collection("users").doc(email).collection("campi").get().then(function(snapshot) {
+			snapshot.forEach(function(userSnapshot) {
+				keys.push(userSnapshot.id);
+			});
+			resolve(keys);
+		}).catch((y) => reject(y));
+	});
+}
+
+function getArrayCampiFromUtente(email, callback){
+	getCampiFromUtente(email).then((x) => {
+		if (x.length == 0) {
+			if(TEST) console.log('No such Array!');
+			callback("ERRORE");
+		} else {
+			if(TEST) console.log('Array Data: ', x);
+			callback(null, x, email);
+		}
+	});
+}
+
+async function getSensorifromArray(x, email, callback){
+	var keys = Array();
+	await x.forEach(async function (campo) {
+		db.collection("users").doc(email).collection("campi").doc(campo).collection("sensori").get().then(function(snapshot) {
+			snapshot.forEach(function(userSnapshot) {
+				keys.push(userSnapshot.id);
+			});
+		})
+	})
+	callback(null, keys);
+}
+
+function getSensorifromUtente(email) {
+	return new Promise(function(resolve, reject) {
+		async.waterfall([
+			async.apply(getArrayCampiFromUtente, email),
+			getSensorifromArray,
+		], (err, result) => {
+			if(err != null) reject(err);
+			else {
+				console.log("finsco promise");
+				resolve(result);
+			}
+		});
+	});
 }
 
 /***************************/
 /*         Routing         */
 /***************************/
 app.get('/prova', (req, res) => {
-	getInnaffiamentiFromSensorID("ID123883", function (err, result) {
-		if(err != null) res.send(err);
-		else res.send(result);
-	});
+	getSensorifromUtente("ermannino@gmail.com").then( (x) => res.send(x)).catch((y) => res.send("Errore"));
 });
 
 app.get('/index', accessProtectionMiddleware, function (req, res) {
