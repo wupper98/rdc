@@ -1,18 +1,7 @@
-#!/usr/bin/env node
-
-const path = require('path')
-const express = require('express')
-const request = require('request')
-const passport = require('passport')
-const bodyparser = require('body-parser')
-const session = require('express-session')
-const GoogleStrategy = require('passport-google-oauth20').Strategy
-
-//Per le promise
-var Promise = require('promise');
-
 //Per async
 var async = require("async");
+//Per le promise
+var Promise = require('promise');
 
 // Setup per accedere a firebase
 var admin = require("firebase-admin");
@@ -26,56 +15,6 @@ admin.initializeApp({
 let db = admin.firestore();
 
 
-require('dotenv').config()
-
-const HTTP_OK = 200;
-const app = express();
-const PORT = process.env.PORT;
-var TEST;
-switch (process.argv[2]) {
-	case 'true':
-		TEST = true;
-		break;
-	case 'false':
-		TEST = false;
-		break;
-}
-
-// Componenti URL openweather
-const OWM_URL_1 = 'https://api.openweathermap.org/data/2.5/onecall?'
-const OWM_URL_2 = '&appid=' + process.env.OWM_KEY;
-
-// Componenti URL leaflet
-const LL_URL_1 = 'https://api.mapbox.com/styles/v1/mapbox/streets-v11/static/';
-const LL_URL_2 = ',10,0,45/600x600?access_token=' + process.env.LL_KEY;
-
-/***************************/
-/*        Functions        */
-/***************************/
-
-// Checks if a user is logged in
-const accessProtectionMiddleware = (req, res, next) => {
-	if (req.isAuthenticated()) {
-		next();
-	} else {
-		res.status(403).render('403forbidden.ejs', {port: PORT});
-	}
-};
-
-// Set up passport strategy
-passport.use(new GoogleStrategy(
-	{
-		clientID: process.env.GOOGLE_OAUTH_TEST_APP_CLIENT_ID,
-		clientSecret: process.env.GOOGLE_OAUTH_TEST_APP_CLIENT_SECRET,
-		callbackURL: 'http://localhost:' + PORT + '/auth/google/callback',
-		scope: ['email'],
-	}, (accessToken, refreshToken, profile, cb) => {
-		if(TEST) console.log('Our user authenticated with Google, and Google sent us back this profile info identifying the authenticated user:', profile);
-
-		return cb(null, profile);
-	},
-));
-
 /*************************************/
 /*         Database Firebase         */
 /*************************************/
@@ -85,7 +24,7 @@ passport.use(new GoogleStrategy(
 /*         Create User Firebase  	 */
 /*************************************/
 
-function createUser(email) { //creo l'utente
+export function createUser(email) { //creo l'utente
 	let instance = db.collection("users").doc(email);
 	instance.create({}).then(function() {
 		if(TEST) console.log("Utente aggiunto al database: "+ email);
@@ -108,7 +47,7 @@ function createUser(email) { //creo l'utente
 /*         CreateCampo Firebase         */
 /*************************************/
 
-function createCampo(email, lat, lon) { //creo il campo per l'utente e ritorna l'id
+export function createCampo(email, lat, lon) { //creo il campo per l'utente e ritorna l'id
 
 	db.collection("users").doc(email).get().then((userInstance) => {
 		var cid = parseInt(userInstance.data().campicounter) + 1;
@@ -140,7 +79,7 @@ function createCampo(email, lat, lon) { //creo il campo per l'utente e ritorna l
 /*         Create Sensore         */
 /*************************************/
 // aggiunge alla lista di rilevazioni di un sensore
-function createSensore(email, campo, id, name) { //creo il sensore sia nella sua tabella, sia per il rispettivo utente
+export function createSensore(email, campo, id, name) { //creo il sensore sia nella sua tabella, sia per il rispettivo utente
 	db.collection("users").doc(email).collection("campi").doc(campo).collection("sensori").doc(id).create({
 		name: name,
 	}).then(function() {
@@ -163,7 +102,7 @@ function createSensore(email, campo, id, name) { //creo il sensore sia nella sua
 /*         Create Rilevazione         */
 /*************************************/
 
-function createRilevazione(email, campo, sensore, umidita, data) { //creo innaffiamento
+export function createRilevazione(email, campo, sensore, umidita, data) { //creo innaffiamento
 	db.collection("users").doc(email).collection("campi").doc(campo).collection("sensori").doc(sensore).collection("innaffiamenti").add({
 		umidita: umidita,
 		data: data,
@@ -181,7 +120,7 @@ function createRilevazione(email, campo, sensore, umidita, data) { //creo innaff
 /*         DB - getSensore          */
 /************************************/
 
-function getSensoreFromId(id, callback){
+export function getSensoreFromId(id, callback){
 	db.collection("sensors").doc(id).get().then((x) => {
 		if (!x.exists) {
 			if(TEST) console.log('No such document!');
@@ -195,7 +134,7 @@ function getSensoreFromId(id, callback){
 
 
 
-function getRilevazioniFromDocumento(data, id, callback){
+export function getRilevazioniFromDocumento(data, id, callback){
 	var keys = Array();
 	db.collection("users").doc(data.email).collection("campi").doc(data.campo).collection("sensori").doc(id).collection("innaffiamenti").get().then(function(snapshot) {
 		snapshot.forEach(function(userSnapshot) {
@@ -209,7 +148,7 @@ function getRilevazioniFromDocumento(data, id, callback){
 /*    DB - getRilevazionifromSensordID  */
 /****************************************/
 
-function getRilevazioniFromSensorID(id) {
+export function getRilevazioniFromSensorID(id) {
 	return new Promise(function(resolve, reject) {
 		async.waterfall([
 			async.apply(getSensoreFromId, id),
@@ -226,7 +165,7 @@ function getRilevazioniFromSensorID(id) {
 /****************************************/
 
 //Ritorna una lista di ID => Stringhe, da cui si accede al sensore per: getSensoreFromID
-function getAllSensori(){
+export function getAllSensori(){
 	return new Promise(function(resolve,reject){
 		var keys = Array();
 	db.collection("sensors").get().then(function(snapshot) {
@@ -242,7 +181,7 @@ function getAllSensori(){
 /*         DB - getCampiFromUtente      */
 /****************************************/
 
-function getCampiFromUtente(email){
+export function getCampiFromUtente(email){
 	return new Promise(function(resolve,reject){
 		var keys = Array();
 		db.collection("users").doc(email).collection("campi").get().then(function(snapshot) {
@@ -260,7 +199,7 @@ function getCampiFromUtente(email){
 
 
 // restituisce una lista di sensori di un campo di un utente
-function getSensoriFromCampoUtente(email, campo) {
+export function getSensoriFromCampoUtente(email, campo) {
 	return new Promise(function(resolve,reject){
 		var keys = Array();
 		db.collection("users").doc(email).collection("campi").doc(campo).collection("sensori").get().then(function(snapshot) {
@@ -294,7 +233,7 @@ function getSensorifromArray(x, email, callback){
 }
 
 // restituisce i sensori di un utente
-function getSensorifromUtente(email) {
+export function getSensorifromUtente(email) {
 	return new Promise(function(resolve, reject) {
 		async.waterfall([
 			async.apply(getArrayCampiFromUtente, email),
@@ -310,110 +249,10 @@ function getSensorifromUtente(email) {
 /*         DB - getCampiCounter         */
 /****************************************/
 
-function getCampiCounter(email) {
+export function getCampiCounter(email) {
 	return new Promise(function(resolve, reject) {
 		db.collection("users").doc(email).get().then(function(x) {
 			resolve(x.data().campicounter)
 		}).catch((y) => reject(y));
 	});
 }
-
-
-/***************************/
-/*         Routing         */
-/***************************/
-
-app.get('/index', accessProtectionMiddleware, function (req, res) {
-	var umail = req.user.emails[0].value;
-	db.collection("users").doc(umail).get().then((x) => {
-		if(x.exists) {
-			console.log("[!] Implementare get /dashboard");
-		}
-		else {
-			createUser(umail);
-			res.render('index.ejs', {port: PORT, nomeutente: umail});
-		}
-	});
-});
-
-// Create API endpoints
-// This is where users point their browsers in order to get logged in
-// This is also where Google sends back information to our app once a user authenticates with Google
-app.get('/auth/google/callback',
-	passport.authenticate('google', { failureRedirect: '/', session: true }),
-	(req, res) => {
-		if(TEST) 
-			console.log('we authenticated, here is our user object:', req.user);
-			
-		res.redirect('/index');
-	}
-);
-
-app.get('/logout', function(req, res) {
-	req.logout();
-	res.redirect('/');
-});
-
-app.get('/', (req, res) => {
-	res.render('home.ejs', {auth: req.isAuthenticated()});
-});
-
-app.get('/dashboard', function(req, res) {
-	//var umail = "ermannino@gmail.com";
-	//createCampo(umail, 41.33, 12.33);
-	//createSensore(umail, "campo102402841212", "ID12", "nomesensorenuovo");
-	//createRilevazione(umail, "campo102402841212", "ID12", "1.3", "2019-02-20");
-})
-
-app.post('/dashboard', accessProtectionMiddleware, function (req, res) {
-	var latitude = req.body.latitude;
-	var longitude = req.body.longitude;
-	var umail = req.user.emails[0].value;
-	
-	/* 
-	currentUser è un riferimento al "percorso" dell'oggetto
-	currentUser permette di modificare ciò che è in firebase:
-	update, get, bla bla bla
-	userInstance invece è l'oggetto preso dal db e da lui posso
-	accedere ai dati
-	*/
-	
-	createCampo(umail, latitude, longitude);
-	createSensore(umail, "campo1", "ID123883", "nomesensore");
-	createRilevazione(umail, "campo1", "ID123883", "1.3", "2019-02-20");
-	
-	
-	var url = OWM_URL_1 + 'lat=' + latitude
-	+ '&lon=' + longitude + '&exclude=' + 'minutely,hourly,current' + OWM_URL_2
-	
-	request(url, function (error, response, body) {
-		if (!error && response.statusCode == HTTP_OK) {
-			
-			var info = JSON.parse(body).daily[0];
-			var main = info.temp;
-			var weather = info.weather[0].description;
-			
-			res.render('dashboard.ejs', {
-				lat: latitude,
-				lon: longitude,
-				weather: weather,
-				temp: KelvinToCelcius(main.day),
-				feels_like: KelvinToCelcius(info.feels_like.day),
-				min: KelvinToCelcius(main.min),
-				max: KelvinToCelcius(main.max),
-				pressure: info.pressure,
-				humidity: info.humidity,
-				port: PORT
-			});
-			
-		}
-	});
-
-});
-// Avvio del server
-var server = app.listen(PORT, function () {
-	if(TEST) console.log("[!] Output will be verbose, test mode on!");
-	console.log('[i] Agrismart su http://localhost:%s\n', PORT);
-	console.log("[+] Premere ctrl+c per terminare");
-	// console.log(process.env.GOOGLE_OAUTH_TEST_APP_CLIENT_ID + "\n");
-});
