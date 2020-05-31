@@ -420,7 +420,6 @@ app.post('/dashboard', accessProtectionMiddleware, function (req, res) {
 			var info = JSON.parse(body).daily[0];
 			var main = info.temp;
 			var weather = info.weather[0].description;
-			// var map_url = LL_URL_1 + longitude + ',' + latitude + LL_URL_2;
 			
 			res.render('dashboard.ejs', {
 				lat: latitude,
@@ -444,5 +443,6 @@ app.post('/dashboard', accessProtectionMiddleware, function (req, res) {
 var server = app.listen(PORT, function () {
 	if(TEST) console.log("[!] Output will be verbose, test mode on!");
 	console.log('[i] Agrismart su http://localhost:%s\n', PORT);
+	console.log("[+] Premere ctrl+c per terminare");
 	// console.log(process.env.GOOGLE_OAUTH_TEST_APP_CLIENT_ID + "\n");
 });
