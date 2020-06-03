@@ -1,3 +1,5 @@
+const TEST = process.env.TEST;
+
 //Per async
 var async = require("async");
 //Per le promise
@@ -24,7 +26,7 @@ let db = admin.firestore();
 /*         Create User Firebase  	 */
 /*************************************/
 
-export function createUser(email) { //creo l'utente
+module.exports.createUser = function (email) { //creo l'utente
 	let instance = db.collection("users").doc(email);
 	instance.create({}).then(function() {
 		if(TEST) console.log("Utente aggiunto al database: "+ email);
@@ -47,7 +49,7 @@ export function createUser(email) { //creo l'utente
 /*         CreateCampo Firebase         */
 /*************************************/
 
-export function createCampo(email, lat, lon) { //creo il campo per l'utente e ritorna l'id
+module.exports.createCampo = function (email, lat, lon) { //creo il campo per l'utente e ritorna l'id
 
 	db.collection("users").doc(email).get().then((userInstance) => {
 		var cid = parseInt(userInstance.data().campicounter) + 1;
@@ -70,7 +72,7 @@ export function createCampo(email, lat, lon) { //creo il campo per l'utente e ri
 		}).catch((error) => {
 			console.log(error);
 		});
-	});
+	}).catch((err) => {console.log(err);});
 	
 }
 
@@ -79,7 +81,7 @@ export function createCampo(email, lat, lon) { //creo il campo per l'utente e ri
 /*         Create Sensore         */
 /*************************************/
 // aggiunge alla lista di rilevazioni di un sensore
-export function createSensore(email, campo, id, name) { //creo il sensore sia nella sua tabella, sia per il rispettivo utente
+module.exports.createSensore = function (email, campo, id, name) { //creo il sensore sia nella sua tabella, sia per il rispettivo utente
 	db.collection("users").doc(email).collection("campi").doc(campo).collection("sensori").doc(id).create({
 		name: name,
 	}).then(function() {
@@ -102,7 +104,7 @@ export function createSensore(email, campo, id, name) { //creo il sensore sia ne
 /*         Create Rilevazione         */
 /*************************************/
 
-export function createRilevazione(email, campo, sensore, umidita, data) { //creo innaffiamento
+module.exports.createRilevazione = function (email, campo, sensore, umidita, data) { //creo innaffiamento
 	db.collection("users").doc(email).collection("campi").doc(campo).collection("sensori").doc(sensore).collection("innaffiamenti").add({
 		umidita: umidita,
 		data: data,
@@ -120,7 +122,7 @@ export function createRilevazione(email, campo, sensore, umidita, data) { //creo
 /*         DB - getSensore          */
 /************************************/
 
-export function getSensoreFromId(id, callback){
+module.exports.getSensoreFromId = function (id, callback){
 	db.collection("sensors").doc(id).get().then((x) => {
 		if (!x.exists) {
 			if(TEST) console.log('No such document!');
@@ -134,7 +136,7 @@ export function getSensoreFromId(id, callback){
 
 
 
-export function getRilevazioniFromDocumento(data, id, callback){
+module.exports.getRilevazioniFromDocumento = function (data, id, callback){
 	var keys = Array();
 	db.collection("users").doc(data.email).collection("campi").doc(data.campo).collection("sensori").doc(id).collection("innaffiamenti").get().then(function(snapshot) {
 		snapshot.forEach(function(userSnapshot) {
@@ -148,7 +150,7 @@ export function getRilevazioniFromDocumento(data, id, callback){
 /*    DB - getRilevazionifromSensordID  */
 /****************************************/
 
-export function getRilevazioniFromSensorID(id) {
+module.exports.getRilevazioniFromSensorID = function (id) {
 	return new Promise(function(resolve, reject) {
 		async.waterfall([
 			async.apply(getSensoreFromId, id),
@@ -165,7 +167,7 @@ export function getRilevazioniFromSensorID(id) {
 /****************************************/
 
 //Ritorna una lista di ID => Stringhe, da cui si accede al sensore per: getSensoreFromID
-export function getAllSensori(){
+module.exports.getAllSensori = function (){
 	return new Promise(function(resolve,reject){
 		var keys = Array();
 	db.collection("sensors").get().then(function(snapshot) {
@@ -181,7 +183,7 @@ export function getAllSensori(){
 /*         DB - getCampiFromUtente      */
 /****************************************/
 
-export function getCampiFromUtente(email){
+module.exports.getCampiFromUtente = function (email){
 	return new Promise(function(resolve,reject){
 		var keys = Array();
 		db.collection("users").doc(email).collection("campi").get().then(function(snapshot) {
@@ -199,7 +201,7 @@ export function getCampiFromUtente(email){
 
 
 // restituisce una lista di sensori di un campo di un utente
-export function getSensoriFromCampoUtente(email, campo) {
+module.exports.getSensoriFromCampoUtente = function (email, campo) {
 	return new Promise(function(resolve,reject){
 		var keys = Array();
 		db.collection("users").doc(email).collection("campi").doc(campo).collection("sensori").get().then(function(snapshot) {
@@ -233,7 +235,7 @@ function getSensorifromArray(x, email, callback){
 }
 
 // restituisce i sensori di un utente
-export function getSensorifromUtente(email) {
+module.exports.getSensorifromUtente = function (email) {
 	return new Promise(function(resolve, reject) {
 		async.waterfall([
 			async.apply(getArrayCampiFromUtente, email),
@@ -249,7 +251,7 @@ export function getSensorifromUtente(email) {
 /*         DB - getCampiCounter         */
 /****************************************/
 
-export function getCampiCounter(email) {
+module.exports.getCampiCounter = function (email) {
 	return new Promise(function(resolve, reject) {
 		db.collection("users").doc(email).get().then(function(x) {
 			resolve(x.data().campicounter)

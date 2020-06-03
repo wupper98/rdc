@@ -1,3 +1,4 @@
+const db = require("../services/database")
 const path = require('path')
 const express = require('express')
 const request = require('request')
@@ -58,6 +59,11 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
+	var umail = req.user.emails[0].value;
+	var latitude = req.body.latitude;
+	var longitude = req.body.longitude;
+	db.createUser(umail);
+	db.createCampo(umail, latitude, longitude);
     res.send("hahaha");
 })
 
