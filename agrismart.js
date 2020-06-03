@@ -446,3 +446,7 @@ var server = app.listen(PORT, function () {
 	console.log("[+] Premere ctrl+c per terminare");
 	// console.log(process.env.GOOGLE_OAUTH_TEST_APP_CLIENT_ID + "\n");
 });
+
+app.get('/prova', (req, res) => {
+    getSensorifromUtente("ermannino@gmail.com").then( (x) => res.send(x)).catch((y) => res.send("Errore"));
+});
