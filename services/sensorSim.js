@@ -3,8 +3,23 @@ const mqtt = require('mqtt')
 var temporal = require('temporal')
 var client =  mqtt.connect('mqtt://broker.hivemq.com');
 
-// Sensor publishes on sensor/state; sensor/moisture; sensor/connected
-// Sensor subscribes to sensor/sendUpdate
+var sensorID;
+if( process.argv[2] == null ) {
+    console.log("[!] Usage: node sensorSim.js <sensorID>");
+    process.exit(1);
+}
+else sensorID = process.argv[2].toString();
+
+var sendUpdateQueueName = sensorID + "/sendUpdate";
+var stateQueueName = sensorID + "/state";
+var moistureQueueName = sensorID + "/moisture"
+var connectQueueName = "sensor/connected";
+
+// Sensor publishes on sensorID/state; sensorID/moisture; sensor/connected
+// Sensor subscribes to sensorID/sendUpdate
+// Le code sensorID sono esclusive per il sensore con id sensorID
+// sensor/connected invece è una coda generica sulla quale il sensore comunica
+// il suo id al controller per far creare le code necessarie
 
 
 /*
@@ -15,33 +30,39 @@ var state = 'high'
 var moistureLVL = '0.6'
 
 client.on('connect', () => {
-  client.subscribe('sensor/sendUpdate'); // Coda da cui ricevere il comando
+  client.subscribe(sendUpdateQueueName); // Coda da cui ricevere richieste
 
-  client.publish('sensor/connected', 'true');
-  sendStateUpdate();
-  sendMoistureUpdate();
+  client.publish(connectQueueName, sensorID);
 })
 
 client.on('message', (topic, message) => {
-  console.log('received message %s', message);
+  console.log('[+] Ricevuto: %s', message);
   switch (message) {
+		case 'start':
+			sendStateUpdate();
+			sendMoistureUpdate();
+			break;
     case 'state':
       sendStateUpdate();
       break;
     case 'moisture':
       sendMoistureUpdate();
       break;
+    case 'all':
+			sendStateUpdate();
+			sendMoistureUpdate();
+			break;
   }
 })
 
 function sendStateUpdate() {
   console.log("[+] Sent state %s", state);
-  client.publish('sensor/state', state);
+  client.publish(stateQueueName, state);
 }
 
 function sendMoistureUpdate() {
   console.log("[+] Sent moisture level %s", moistureLVL);
-  client.publish('sensor/moisture', moistureLVL);
+  client.publish(moistureQueueName, moistureLVL);
 }
 
 /**
@@ -49,15 +70,15 @@ function sendMoistureUpdate() {
  */
 function handleAppExit (options, err) {
   if (err) {
-    console.log(err.stack)
+    console.log(err.stack);
   }
 
   if (options.cleanup) {
-    client.publish('sensor/connected', 'false')
+    client.publish(connectQueueName, sensorID);
   }
 
   if (options.exit) {
-    process.exit()
+    process.exit();
   }
 }
 
