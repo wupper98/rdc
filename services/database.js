@@ -84,6 +84,7 @@ module.exports.createCampo = function (email, lat, lon) { //creo il campo per l'
 module.exports.createSensore = function (email, campo, id, name) { //creo il sensore sia nella sua tabella, sia per il rispettivo utente
 	db.collection("users").doc(email).collection("campi").doc(campo).collection("sensori").doc(id).create({
 		name: name,
+		stato: "high"
 	}).then(function() {
 		if(TEST) console.log("Sensore "+ id +" aggiunto al database dell'utente: "+ email);
 		db.collection("sensors").doc(id).create({
@@ -107,9 +108,22 @@ module.exports.createSensore = function (email, campo, id, name) { //creo il sen
 module.exports.createRilevazione = function (email, campo, sensore, umidita, data) { //creo innaffiamento
 	db.collection("users").doc(email).collection("campi").doc(campo).collection("sensori").doc(sensore).collection("innaffiamenti").add({
 		umidita: umidita,
-		data: data,
+		data: data
 	}).then(function() {
-		if(TEST) console.log("Innaffiamento al sensore "+ sensore +" aggiunto al database dell'utente: "+ email);
+		if(TEST) console.log("Rilevamento del sensore "+ sensore +" aggiunto al database dell'utente: "+ email);
+	});
+}
+
+module.exports.updateStatoSensore = function (sensore, stato) {
+	db.collection("sensors").doc(sensore).get().then((x) => {
+		if (!x.exists) {
+			if(TEST) console.log('[+] No such sensor!');
+		} else {
+			if(TEST) console.log('Document data: ', x.data());
+			db.collection("users").doc(x.email).collection("campi").doc(x.campo).collection("sensori").doc(sensore).update({
+				stato: stato
+			})
+		}
 	});
 }
 

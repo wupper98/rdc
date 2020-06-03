@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 const mqtt = require('mqtt')
+const db = require("./database");
 const client = mqtt.connect('mqtt://broker.hivemq.com')
 
 var sensorState = ''
