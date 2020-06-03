@@ -54,7 +54,6 @@ router.get('/', (req, res) => {
 			}).catch((err) => {
 				console.log(err);
 			});
-			
         }
         else {
             res.render("404notfound.ejs", {port: process.env.PORT});
@@ -62,21 +61,23 @@ router.get('/', (req, res) => {
     });
 });
 
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
 	var umail = req.user.emails[0].value;
+	var nome = req.body.nome;
 	var latitude = req.body.latitude;
 	var longitude = req.body.longitude;
-	db.createUser(umail);
-	db.createCampo(umail, latitude, longitude);
+	await db.createUser(umail);
+	await db.createCampo(umail, nome, latitude, longitude);
 	// una volta aggiunto un campo eseguo la redirect sulla dashboard
     res.redirect("/dashboard")
 })
 
 router.post('/addSensore', (req, res) => {
-	console.log(req.body);
+	var umail = req.user.emails[0].value;
 	sensorID = req.body.sensorID;
 	campoID = req.body.campoID;
-	res.send('skere');
+	db.createSensore(umail, campoID, sensorID, "s1");
+	res.redirect("/dashboard");
 });
 
 module.exports = router;

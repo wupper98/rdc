@@ -26,18 +26,10 @@ let db = admin.firestore();
 /*         Create User Firebase  	 */
 /*************************************/
 
-module.exports.createUser = function (email) { //creo l'utente
+module.exports.createUser = async function (email) { //creo l'utente
 	let instance = db.collection("users").doc(email);
-	instance.create({}).then(function() {
+	instance.create({campicounter: 0}).then(function() {
 		if(TEST) console.log("Utente aggiunto al database: "+ email);
-		// campicounter serve per tenere traccia dell'indice da dare al campo
-		instance.set({
-			campicounter: 0
-		}).then(function() {
-			if(TEST) console.log("[+] campicounter set to 0");
-		}).catch(function() {
-			if(TEST) console.log("error campicounter set");
-		});
 	}).catch((err) => {
 		if(TEST) console.log("Utente già registrato: "+ email);
 	});
@@ -63,21 +55,22 @@ module.exports.getAllUtenti = function (){
 /*         CreateCampo Firebase         */
 /*************************************/
 
-module.exports.createCampo = function (email, lat, lon) { //creo il campo per l'utente e ritorna l'id
+module.exports.createCampo = async function (email,nome, lat, lon) { //creo il campo per l'utente e ritorna l'id
 
-	db.collection("users").doc(email).get().then((userInstance) => {
-		var cid = parseInt(userInstance.data().campicounter) + 1;
+	db.collection("users").doc(email).get().then( async (userInstance) => {
+		var cid = userInstance.data().campicounter + 1;
 		var nomeCampo = "campo" + cid.toString();
 		if(TEST) console.log("Provo a creare " + nomeCampo);
 
 		db.collection("users").doc(email).update({
 			"campicounter": cid
-		}).then(() => {
+		}).then( async () => {
 			if(TEST) console.log("[+] campicounter aggiornato");
 			db.collection("users").doc(email).collection("campi").doc(nomeCampo).set({
+				nome: nome,
 				lat: lat,
 				lon: lon,
-			}).then(function() {
+			}).then( async function() {
 				if(TEST) console.log("Campo "+ nomeCampo +" aggiunto al database dell'utente: "+ email);
 				
 			}).catch((err) => {
@@ -95,7 +88,7 @@ module.exports.createCampo = function (email, lat, lon) { //creo il campo per l'
 /*         Create Sensore         */
 /*************************************/
 // aggiunge alla lista di rilevazioni di un sensore
-module.exports.createSensore = function (email, campo, id, name) { //creo il sensore sia nella sua tabella, sia per il rispettivo utente
+module.exports.createSensore = async function (email, campo, id, name) { //creo il sensore sia nella sua tabella, sia per il rispettivo utente
 	db.collection("users").doc(email).collection("campi").doc(campo).collection("sensori").doc(id).create({
 		name: name,
 		stato: "high"
@@ -119,7 +112,7 @@ module.exports.createSensore = function (email, campo, id, name) { //creo il sen
 /*         Create Rilevazione         */
 /*************************************/
 
-module.exports.createRilevazione = function (email, campo, sensore, umidita, data) { //creo innaffiamento
+module.exports.createRilevazione = async function (email, campo, sensore, umidita, data) { //creo innaffiamento
 	db.collection("users").doc(email).collection("campi").doc(campo).collection("sensori").doc(sensore).collection("innaffiamenti").add({
 		umidita: umidita,
 		data: data
@@ -128,7 +121,7 @@ module.exports.createRilevazione = function (email, campo, sensore, umidita, dat
 	});
 }
 
-module.exports.updateStatoSensore = function (sensore, stato) {
+module.exports.updateStatoSensore = async function (sensore, stato) {
 	db.collection("sensors").doc(sensore).get().then((x) => {
 		if (!x.exists) {
 			if(TEST) console.log('[+] No such sensor!');

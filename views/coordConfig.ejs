@@ -9,6 +9,10 @@
     <h1>Benvenuto, <%= nomeutente %></h1>
     <h2>Inserisci le coordinate del tuo campo</h2>
     <form action="http://localhost:<%= port %>/dashboard" method="post">
+        Nome:
+        <br>
+        <input type="text" name="nome" placeholder="Nome campo">
+        <br>
         Latitudine:
         <br>
         <input type="text" name="latitude" value="0">
