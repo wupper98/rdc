@@ -1,7 +1,12 @@
 <h1>Benvenuto su Agrismart</h1>
 <br>
 <% if(auth){ %>
+    <p>Seleziona il campo</p>
+    <% for(var i in campi) { %>
+        <a href="http://localhost:<%= port%>/dashboard/<%= campi[i] %>"><%= campi[i]%></a><br>
+    <% } %>
+    <br>
     <a href="/logout">Logout</a>
-    <% } else{ %>  
+    <% } else{ %>
     <a href="/auth/google/callback">Login</a>
  <% } %>

@@ -54,7 +54,7 @@ app.get('/auth/google/callback', passport.authenticate('google', { failureRedire
 	db.getAllUtenti().then((utenti) => {
 		if( utenti.indexOf(umail) > -1 ){
 			// utente già presente nel DB. Lo mando alla sua dashboard
-			res.redirect('/dashboard');
+			res.redirect('/');
 		}
 		else{
 			// utente nuovo. Gli faccio registrare un nuovo campo

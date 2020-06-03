@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const TEST = process.env.TEST;
 
 //Per async

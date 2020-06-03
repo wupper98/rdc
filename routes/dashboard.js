@@ -17,16 +17,14 @@ function KelvinToCelcius(k) {
 	return (parseFloat(k) - 272.15).toPrecision(2);
 }
 
-router.get('/', (req, res) => {
+router.get('/campo*', (req, res) => {
+
+	// prendo l'ultima parte dell'url per capire quale campo vuole vedere l'utente
+	var campo = req.originalUrl.split('/')[2];
 
     var latitude = "0";
 	var longitude = "0";
-	var umail = req.user.emails[0].value;
-	
-	//createCampo(umail, latitude, longitude);
-	//createSensore(umail, "campo1", "ID123883", "nomesensore");
-	//createRilevazione(umail, "campo1", "ID123883", "1.3", "2019-02-20");
-	
+	var umail = req.user.emails[0].value;	
 	
 	var url = OWM_URL_1 + 'lat=' + latitude
 	+ '&lon=' + longitude + '&exclude=' + 'minutely,hourly,current' + OWM_URL_2
@@ -69,15 +67,15 @@ router.post('/', async (req, res) => {
 	await db.createUser(umail);
 	await db.createCampo(umail, nome, latitude, longitude);
 	// una volta aggiunto un campo eseguo la redirect sulla dashboard
-    res.redirect("/dashboard")
+    res.redirect("/")
 })
 
-router.post('/addSensore', (req, res) => {
+router.post('/addSensore', async (req, res) => {
 	var umail = req.user.emails[0].value;
 	sensorID = req.body.sensorID;
 	campoID = req.body.campoID;
-	db.createSensore(umail, campoID, sensorID, "s1");
-	res.redirect("/dashboard");
+	await db.createSensore(umail, campoID, sensorID, "s1");
+	res.redirect("/dashboard/campoID");
 });
 
 module.exports = router;
