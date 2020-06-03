@@ -41,8 +41,22 @@ module.exports.createUser = function (email) { //creo l'utente
 	}).catch((err) => {
 		if(TEST) console.log("Utente già registrato: "+ email);
 	});
+}
 
-	
+/*************************************/
+/*          Get Users Firebase  	 */
+/*************************************/
+
+module.exports.getAllUtenti = function (){
+	return new Promise(function(resolve,reject){
+		var keys = Array();
+	db.collection("users").get().then(function(snapshot) {
+		snapshot.forEach(function(userSnapshot) {
+			keys.push(userSnapshot.id);
+		});
+		resolve(keys);
+	}).catch((y) => reject(y));
+	});
 }
 
 /*************************************/
@@ -54,7 +68,7 @@ module.exports.createCampo = function (email, lat, lon) { //creo il campo per l'
 	db.collection("users").doc(email).get().then((userInstance) => {
 		var cid = parseInt(userInstance.data().campicounter) + 1;
 		var nomeCampo = "campo" + cid.toString();
-		if(TEST) console.log("Provo a creare" + nomeCampo);
+		if(TEST) console.log("Provo a creare " + nomeCampo);
 
 		db.collection("users").doc(email).update({
 			"campicounter": cid

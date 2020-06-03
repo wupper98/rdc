@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+const db = require("./services/database")
 const path = require('path')
 const express = require('express')
 const request = require('request')
@@ -10,15 +11,7 @@ require('dotenv').config()
 
 const app = express();
 const PORT = process.env.PORT;
-var TEST;
-switch (process.argv[2]) {
-	case 'true':
-		TEST = true;
-		break;
-	case 'false':
-		TEST = false;
-		break;
-}
+var TEST = process.env.TEST;
 
 // Configurazioni per il corretto funzionamento dell'app
 app.set('view engine', 'ejs');
@@ -56,7 +49,20 @@ passport.use(new GoogleStrategy( {
 
 app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/', session: true }), (req, res) => {
 	if(TEST) console.log('we authenticated, here is our user object:', req.user);
-	res.redirect('/coordConfig');
+	umail = req.user.emails[0].value;
+
+	db.getAllUtenti().then((utenti) => {
+		if( utenti.indexOf(umail) > -1 ){
+			// utente già presente nel DB. Lo mando alla sua dashboard
+			res.redirect('/dashboard');
+		}
+		else{
+			// utente nuovo. Gli faccio registrare un nuovo campo
+			res.redirect('/coordConfig');
+		}
+	}).catch((err) => {
+		if(TEST) console.log(err);
+	}); 
 });
 
 app.get('/logout', function(req, res) {
