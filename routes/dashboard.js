@@ -30,10 +30,8 @@ router.get('/', (req, res) => {
 	
 	var url = OWM_URL_1 + 'lat=' + latitude
 	+ '&lon=' + longitude + '&exclude=' + 'minutely,hourly,current' + OWM_URL_2
-    console.log("sono qui");
 	request(url, function (error, response, body) {
 		if (!error && response.statusCode == HTTP_OK) {
-			console.log("sono qui");
 			var info = JSON.parse(body).daily[0];
 			var main = info.temp;
 			var weather = info.weather[0].description;
