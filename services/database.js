@@ -280,3 +280,16 @@ module.exports.getCampiCounter = function (email) {
 		}).catch((y) => reject(y));
 	});
 }
+
+
+/****************************************/
+/*         DB - getInfoCampo		    */
+/****************************************/
+
+module.exports.getInfoCampo = function (email, idcampo) {
+	return new Promise(function(resolve, reject) {
+		db.collection("users").doc(email).collection("campi").doc(idcampo).get().then(function(x) {
+			resolve([x.data().nome, x.data().lat, x.data().lon]);
+		}).catch((y) => reject(y));
+	});
+}
