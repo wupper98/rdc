@@ -19,7 +19,7 @@ router.get('/', (req, res) => {
                 auth: req.isAuthenticated()
             });
         }).catch((err) => {
-            console.log(err);
+            if(TEST) console.log(err);
         });
     }
     else{

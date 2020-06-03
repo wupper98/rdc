@@ -1,6 +1,7 @@
 <h1>Benvenuto su Agrismart</h1>
 <br>
 <% if(auth){ %>
+    <a href="http://localhost:<%= port%>/coordConfig">Aggiungi un campo</a><br>
     <p>Seleziona il campo</p>
     <% for(var i in campi) { %>
         <a href="http://localhost:<%= port%>/dashboard/<%= campi[i] %>"><%= campi[i]%></a><br>

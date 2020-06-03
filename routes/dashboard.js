@@ -19,26 +19,30 @@ function KelvinToCelcius(k) {
 
 router.get('/campo*', (req, res) => {
 
+	var umail = req.user.emails[0].value;
 	// prendo l'ultima parte dell'url per capire quale campo vuole vedere l'utente
 	var campo = req.originalUrl.split('/')[2];
 
-    var latitude = "0";
-	var longitude = "0";
-	var umail = req.user.emails[0].value;	
-	
-	var url = OWM_URL_1 + 'lat=' + latitude
-	+ '&lon=' + longitude + '&exclude=' + 'minutely,hourly,current' + OWM_URL_2
-	request(url, function (error, response, body) {
-		if (!error && response.statusCode == HTTP_OK) {
-			var info = JSON.parse(body).daily[0];
-			var main = info.temp;
-			var weather = info.weather[0].description;
+	db.getInfoCampo(umail, campo).then((infoCampo)=>{
 
-			db.getCampiFromUtente(umail).then((campi) => {
+		var lat = infoCampo[1].replace(',', '.')
+		var lon = infoCampo[2].replace(',', '.')
+
+		var url = OWM_URL_1 + 'lat=' + lat
+		+ '&lon=' + lon + '&exclude=' + 'minutely,hourly,current' + OWM_URL_2
+
+		request(url, function (error, response, body) {
+			if (!error && response.statusCode == HTTP_OK) {
+				var info = JSON.parse(body).daily[0];
+				var main = info.temp;
+				var weather = info.weather[0].description;
+
+				console.log(infoCampo)
+				
 				res.render('dashboard.ejs', {
 					utente: umail,
-					lat: latitude,
-					lon: longitude,
+					lat: lat,
+					lon: lon,
 					weather: weather,
 					temp: KelvinToCelcius(main.day),
 					feels_like: KelvinToCelcius(info.feels_like.day),
@@ -47,28 +51,48 @@ router.get('/campo*', (req, res) => {
 					pressure: info.pressure,
 					humidity: info.humidity,
 					port: process.env.PORT,
-					nomecampo: campi[0]
+					nomecampo: infoCampo[0]
 				});
-			}).catch((err) => {
-				console.log(err);
-			});
-        }
-        else {
-            res.render("404notfound.ejs", {port: process.env.PORT});
-        }
-    });
+			}
+			else {
+				res.render("404notfound.ejs", {port: process.env.PORT});
+			}
+		});
+	}).catch((err)=>{
+		console.log(err);
+	});
+
+		
 });
+
+function addUserWithProm(umail){
+	return new Promise( async function(resolve, reject){
+		await db.createUser(umail);
+		resolve()
+	});
+}
+
+function addCampoWithProm(umail, nome, lat, lon){
+	return new Promise( async function(resolve, reject){
+		await db.createCampo(umail, nome, lat, lon);
+		resolve()
+	});
+}
 
 router.post('/', async (req, res) => {
 	var umail = req.user.emails[0].value;
 	var nome = req.body.nome;
 	var latitude = req.body.latitude;
 	var longitude = req.body.longitude;
-	await db.createUser(umail);
-	await db.createCampo(umail, nome, latitude, longitude);
-	// una volta aggiunto un campo eseguo la redirect sulla dashboard
-    res.redirect("/")
-})
+	addUserWithProm(umail).then(()=>{
+		addCampoWithProm(umail, nome, latitude, longitude).then(()=>{
+			// una volta aggiunto un campo eseguo la redirect sulla home
+			setTimeout( function(){
+				res.redirect("/");
+			},1000);
+		})
+	})
+});
 
 router.post('/addSensore', async (req, res) => {
 	var umail = req.user.emails[0].value;
