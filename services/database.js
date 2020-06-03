@@ -135,7 +135,6 @@ module.exports.getSensoreFromId = function (id, callback){
 }
 
 
-
 module.exports.getRilevazioniFromDocumento = function (data, id, callback){
 	var keys = Array();
 	db.collection("users").doc(data.email).collection("campi").doc(data.campo).collection("sensori").doc(id).collection("innaffiamenti").get().then(function(snapshot) {
