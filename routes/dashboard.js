@@ -35,18 +35,24 @@ router.get('/', (req, res) => {
 			var info = JSON.parse(body).daily[0];
 			var main = info.temp;
 			var weather = info.weather[0].description;
-			
-			res.render('dashboard.ejs', {
-				lat: latitude,
-				lon: longitude,
-				weather: weather,
-				temp: KelvinToCelcius(main.day),
-				feels_like: KelvinToCelcius(info.feels_like.day),
-				min: KelvinToCelcius(main.min),
-				max: KelvinToCelcius(main.max),
-				pressure: info.pressure,
-				humidity: info.humidity,
-				port: process.env.PORT
+
+			db.getCampiFromUtente(umail).then((campi) => {
+				res.render('dashboard.ejs', {
+					utente: umail,
+					lat: latitude,
+					lon: longitude,
+					weather: weather,
+					temp: KelvinToCelcius(main.day),
+					feels_like: KelvinToCelcius(info.feels_like.day),
+					min: KelvinToCelcius(main.min),
+					max: KelvinToCelcius(main.max),
+					pressure: info.pressure,
+					humidity: info.humidity,
+					port: process.env.PORT,
+					nomecampo: campi[0]
+				});
+			}).catch((err) => {
+				console.log(err);
 			});
 			
         }
@@ -62,7 +68,15 @@ router.post('/', (req, res) => {
 	var longitude = req.body.longitude;
 	db.createUser(umail);
 	db.createCampo(umail, latitude, longitude);
-    res.send("hahaha");
+	// una volta aggiunto un campo eseguo la redirect sulla dashboard
+    res.redirect("/dashboard")
 })
+
+router.post('/addSensore', (req, res) => {
+	console.log(req.body);
+	sensorID = req.body.sensorID;
+	campoID = req.body.campoID;
+	res.send('skere');
+});
 
 module.exports = router;
