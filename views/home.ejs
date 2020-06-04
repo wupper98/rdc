@@ -1,57 +1,73 @@
 <!DOCTYPE html>
 <html>
-    <title>Agrismart | Home</title>
-    <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Allerta+Stencil">
-        <style>
-            .w3-allerta {
-                font-family: "Allerta Stencil", Sans-serif;
-            }
+<title>Agrismart | Home</title>
 
-            a:link, a:visited {
-                background-color: #f44336;
-                color: white;
-                padding: 15px 25px;
-                text-align: center;
-                text-decoration: none;
-                display: inline-block;
-            }
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Allerta+Stencil">
+    <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
 
-            a:hover, a:active {
-                background-color: red;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="w3-container">
-            <div class="w3-black w3-center w3-allerta">
-                <h1>Benvenuto su Agrismart</h1>
-            </div>
-            <br>
-            <% if(auth){ %>
-                <h4>Seleziona il campo</h4>
-                <ul class="w3-ul w3-hoverable">
-                    <% for(var i in campi) { %>
-                        <li class="w3-display-container">
-                            <a class="w3-green" href="http://localhost:<%= port%>/dashboard/<%= campi[i] %>"><%= campi[i]%></a>
-                            <span onclick="this.parentElement.style.display='none'"  class="w3-button w3-display-right">&times;</span>
-                        </li>
-                        <% } %>
-                    </ul>
-                    <br>
-                    <button class="w3-button w3-xlarge w3-circle w3-red w3-card-4 w3-right" onclick="window.location.replace('http://localhost:<%= port%>/coordConfig');">+</button>
-                    <br>
-                    <div class="w3-center">
-                        <a href="/logout">Logout</a>
-                    </div>
-                <% } else{ %>
-                <div class="w3-center">
-                    <a href="/auth/google/callback">Login</a>
-                </div>
-             <% } %>
+        .full-height {
+            height: 100%;
+        }
+
+        .w3-allerta {
+            font-family: "Allerta Stencil", Sans-serif;
+        }
+
+        a:link,
+        a:visited {
+            background-color: #f44336;
+            color: white;
+            padding: 12px 25px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        a:hover,
+        a:active {
+            background-color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="w3-container w3-theme-l1 full-height">
+        <div class="w3-black w3-center w3-allerta">
+            <h1>Benvenuto su Agrismart</h1>
         </div>
-    </body>
-</html>
+        <br>
+        <% if(auth){ %>
+        <h4>Seleziona il campo</h4>
+        <ul class="w3-ul w3-hoverable">
+            <% for(var i in campi) { %>
+            <li class="w3-display-container">
+                <a class="w3-green" href="http://localhost:<%= port%>/dashboard/<%= campi[i] %>"><%= campi[i]%></a>
+                <span onclick="this.parentElement.style.display='none'" class="w3-button w3-display-right"
+                    title="Elimina campo">&times;</span>
+            </li>
+            <% } %>
+        </ul>
+        <br>
+        <button class="w3-button w3-xlarge w3-circle w3-red w3-card-4 w3-right"
+            onclick="window.location.replace('http://localhost:<%= port%>/coordConfig');">+</button>
+        <br>
+        <div class="w3-center">
+            <a href="/logout">Logout</a>
+        </div>
+        <% } else{ %>
+        <div class="w3-center">
+            <a href="/auth/google/callback">Login</a>
+        </div>
+        <% } %>
+    </div>
+</body>
 
+</html>

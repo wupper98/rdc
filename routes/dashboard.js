@@ -25,44 +25,48 @@ router.get('/campo*', (req, res) => {
 
 	db.getInfoCampo(umail, campo).then((infoCampo)=>{
 
-		var lat = infoCampo[1].replace(',', '.')
-		var lon = infoCampo[2].replace(',', '.')
+		// mi prendo tutti i sensori del campo
+		db.getSensoriFromCampoUtente(umail, campo).then((sensors) => {
+			var lat = infoCampo[1].replace(',', '.')
+			var lon = infoCampo[2].replace(',', '.')
+	
+			var url = OWM_URL_1 + 'lat=' + lat
+			+ '&lon=' + lon + '&exclude=' + 'minutely,hourly,current' + OWM_URL_2
+	
+			request(url, function (error, response, body) {
+				if (!error && response.statusCode == HTTP_OK) {
+					var info = JSON.parse(body).daily[0];
+					var main = info.temp;
+					var weather = info.weather[0].description;
 
-		var url = OWM_URL_1 + 'lat=' + lat
-		+ '&lon=' + lon + '&exclude=' + 'minutely,hourly,current' + OWM_URL_2
-
-		request(url, function (error, response, body) {
-			if (!error && response.statusCode == HTTP_OK) {
-				var info = JSON.parse(body).daily[0];
-				var main = info.temp;
-				var weather = info.weather[0].description;
-
-				console.log(infoCampo)
-				
-				res.render('dashboard.ejs', {
-					utente: umail,
-					lat: lat,
-					lon: lon,
-					weather: weather,
-					temp: KelvinToCelcius(main.day),
-					feels_like: KelvinToCelcius(info.feels_like.day),
-					min: KelvinToCelcius(main.min),
-					max: KelvinToCelcius(main.max),
-					pressure: info.pressure,
-					humidity: info.humidity,
-					port: process.env.PORT,
-					nomecampo: infoCampo[0]
-				});
-			}
-			else {
-				res.render("404notfound.ejs", {port: process.env.PORT});
-			}
+					console.log(sensors);
+	
+					res.render('dashboard.ejs', {
+						utente: umail,
+						lat: lat,
+						lon: lon,
+						weather: weather,
+						temp: KelvinToCelcius(main.day),
+						feels_like: KelvinToCelcius(info.feels_like.day),
+						min: KelvinToCelcius(main.min),
+						max: KelvinToCelcius(main.max),
+						pressure: info.pressure,
+						humidity: info.humidity,
+						port: process.env.PORT,
+						nomecampo: infoCampo[0],
+						sensori: sensors
+					});
+				}
+				else {
+					res.render("404notfound.ejs", {port: process.env.PORT});
+				}
+			});
+		}).catch((err) => {
+			console.log(err);
 		});
 	}).catch((err)=>{
 		console.log(err);
 	});
-
-		
 });
 
 function addUserWithProm(umail){
