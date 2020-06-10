@@ -8,74 +8,209 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
-	<link href="/css/style.css" rel="stylesheet" type="text/css">
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
 		integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
 		crossorigin="" />
 	<script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
 		integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
 		crossorigin=""></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="/css/style.css" rel="stylesheet" type="text/css">
+	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Allerta+Stencil">
+	<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
+	<script src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
+	<script src="https://canvasjs.com/assets/script/jquery.canvasjs.min.js"></script>
+	<style>
+		.w3-allerta {
+			font-family: "Allerta Stencil", Sans-serif;
+		}
+	</style>
 </head>
 
 <body>
-	<h3>Benvenuto <%= utente %></h3>
-	<a href="http://localhost:<%= port %>/">HOME</a> -
-	<a href="http://localhost:<%= port %>/logout">Logout</a>
-
-	<h4>Campo: <%= nomecampo%></h4>
-
-	<pre>
-Coordinates: <%= lat %>, <%= lon %>
+	<div class="w3-container w3-theme-l1">
+		<div class="w3-black w3-center w3-allerta">
+			<h3>Benvenuto <%= utente %></h3>
+			<a href="http://localhost:<%= port %>/">HOME</a> -
+			<a href="http://localhost:<%= port %>/logout">Logout</a>
+			<div class="w3-right">
+			</div>
+		</div>
+		<br>
+		<div class="w3-row">
+			<div class="w3-container w3-half">
+				<div class="w3-black w3-center w3-allerta">
+					<h4>Campo: <%= nomecampo%></h4>
+				</div>
+				<div class="w3-container">
+					<pre>
 Wheater:     <%= weather %>
-Temperatures:
-	temp: <%= temp %>
-	feels_like: <%= feels_like%>
-	min: <%= min %>
-	max: <%= max %>
-	pressure: <%= pressure %>
-	humidity: <%= humidity%>
-	</pre>
-	<br>
+					</pre>
+					<div class="w3-left">
+						<p>Temperatura</p>
+					</div>
+					<div class="w3-right">
+						<p class="w3-text-cyan" style="display:inline;">min: <%= min %>°C</p>
+						<p class="w3-text-red">max: <%= max %>°C</p>
+					</div>
+				</div>
+				<br>
+				<div class="w3-light-grey w3-round-xlarge">
+					<div class="w3-container w3-orange w3-round-xlarge" style="width:<%= temp %>%"><%= temp %>°C</div>
+				</div>
+				<p>Temperatura percepita</p>
+				<div class="w3-light-grey w3-round-xlarge">
+					<div class="w3-container w3-yellow w3-round-xlarge" style="width:<%= feels_like %>%">
+						<%= feels_like %>°C</div>
+				</div>
+				<p>Umidità</p>
+				<div class="w3-light-grey w3-round-xlarge">
+					<div class="w3-container w3-blue w3-round-xlarge" style="width:<%= humidity %>%"><%= humidity %>%
+					</div>
+				</div>
+				<p>Pressione</p>
+				<div class="w3-light-grey w3-round-xlarge">
+					<div class="w3-container w3-grey w3-round-xlarge" style="width:<%= pressure %>%100%"><%= pressure %>
+						hpa</div>
+				</div>
 
-	<!-- Dynamic map -->
-	<div id="mapid" style="width: 600px; height: 400px;"></div>
+
+			</div>
+			<br>
+			<div class="w3-container w3-half">
+				<!-- Dynamic map -->
+				<div id="mapid" style="width: 100%; height: 400px;"></div>
+			</div>
+		</div>
+		<br>
+		<div class="w3-row">
+			<div class="w3-container w3-half">
+				<div class="w3-black w3-center w3-allerta">
+					<h4>Sensori</h4>
+				</div>
+				<!-- Lista sensori -->
+				<ul class="w3-ul w3-hoverable">
+					<% for(var i in sensori) { %>
+					<li class="w3-display-container">
+						<p title="<%= sensori[i][0] %>"><%= sensori[i][1] %></p>
+						<span onclick="this.parentElement.style.display='none'" class="w3-button w3-display-right"
+							title="Elimina sensore">&times;</span>
+					</li>
+					<% } %>
+				</ul>
+				<!-- Fine lista -->
+				<div class="w3-container w3-right">
+					<button id="addSensorButton" class="w3-button w3-xlarge w3-circle w3-red w3-card-4"
+						onclick="showAddSensorForm()" title="Aggiungi un sensore">+</button>
+				</div>
+				<div class="w3-container w3-theme-l3" id="createSensorForm" style="visibility:hidden">
+					<span onclick="hideAddSensorForm()" class="w3-button w3-right">&times;</span>
+					<form action="/dashboard/addSensore" method="post">
+						<label for="sensorID">Nome Sensore: </label>
+						<input type="text" id="sensorName" name="sensorName"><br>
+						<input type="text" id="campoID" name="campoID" value="<%= idcampo%>" style="display: none"><br>
+						<button type="submit" formmethod="post">Aggiungi</button>
+					</form>
+				</div>
+			</div>
+			<div class="w3-container w3-half">
+				<div class="w3-black w3-center w3-allerta">
+					<h4>Umidità registrata</h4>
+				</div>
+				<div id="chartContainer" style="height: 370px; width: 100%;"></div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Script per caricare la mappa -->
 	<script>
-
 		var mymap = L.map('mapid').setView(["<%= lat %>", "<%= lon %>"], 13);
 
 		L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
 			maxZoom: 18,
-			attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
-				'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
-				'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
 			id: 'mapbox/streets-v11',
 			tileSize: 512,
 			zoomOffset: -1
 		}).addTo(mymap);
 
 		L.marker(["<%= lat %>", "<%= lon %>"]).addTo(mymap)
-			.bindPopup("<b>Hey,</b><br />Il tuo campo è qui!").openPopup();
+			.bindPopup("<b>Hey,</b><br/>Il tuo campo è qui!</br><%= lat %>,<%= lon %>").openPopup();
 
 		mymap.on('click', onMapClick);
 
 	</script>
-	<br>
-	<button onclick="showAddSensorForm()">Aggiungi un sensore su <%= nomecampo %> </button>
 
-	<div id="createSensorForm" style="visibility:hidden">
-		<form action="/dashboard/addSensore" method="post">
-			<label for="sensorID">Nome Sensore: </label>
-			<input type="text" id="sensorID" name="sensorID"><br>
-			<input type="text" id="campoID" name="campoID" value="<%= nomecampo%>" style="display: none"><br>
-			<button type="submit" formmethod="post">Aggiungi</button>
-		</form>
-	</div>
-
+	<!-- Funzioni JS per le interazioni sulla pagina -->
 	<script>
-		function showAddSensorForm(){
+		function showAddSensorForm() {
 			document.getElementById("createSensorForm").style.visibility = "visible";
+			document.getElementById("addSensorButton").style.visibility = "hidden";
+		}
+
+		function hideAddSensorForm() {
+			document.getElementById("createSensorForm").style.visibility = "hidden";
+			document.getElementById("addSensorButton").style.visibility = "visible";
 		}
 	</script>
 
+	<!-- Script per il grafico dell'umidità-->
+	<script>
+		window.onload = function () {
+
+			var dataPoints = [];
+
+			var chart = new CanvasJS.Chart("chartContainer", {
+				theme: "dark1",
+				title: {
+					text: "Live Data"
+				},
+				axisY: {
+					title: "Umidità",
+					suffix: "%"
+				},
+				axisX: {
+					title: "Data"
+				},
+				data: [{
+					type: "splineArea",
+					color: "rgba(54,158,173,.7)",
+					markerSize: 5,
+					dataPoints: dataPoints
+				}]
+			});
+			updateData();
+
+			// Initial Values
+			var xValue = 0;
+			var yValue = 10;
+			var newDataCount = 6;
+
+			function addData(data) {
+				if (newDataCount != 1) {
+					$.each(data, function (key, value) {
+						dataPoints.push({ x: value[0], y: parseInt(value[1]) });
+						xValue++;
+						yValue = parseInt(value[1]);
+					});
+				} else {
+					//dataPoints.shift();
+					dataPoints.push({ x: data[0][0], y: parseInt(data[0][1]) });
+					xValue++;
+					yValue = parseInt(data[0][1]);
+				}
+
+				newDataCount = 1;
+				chart.render();
+				setTimeout(updateData, 1500);
+			}
+
+			function updateData() {
+				$.getJSON("https://canvasjs.com/services/data/datapoints.php?xstart=" + xValue + "&ystart=" + yValue + "&length=" + newDataCount + "type=json", addData);
+			}
+
+		}
+	</script>
 </body>
+
 </html>

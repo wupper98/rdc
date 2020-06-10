@@ -1,3 +1,5 @@
+require('dotenv').config()
+
 const TEST = process.env.TEST;
 
 // Modulo per costruire il percorso a partire dalla 
@@ -33,7 +35,7 @@ let db = admin.firestore();
 
 module.exports.createUser = async function (email) { //creo l'utente
 	let instance = db.collection("users").doc(email);
-	instance.create({campicounter: 0}).then(function() {
+	instance.create({campicounter: 0, sensoricounter: 0}).then(function() {
 		if(TEST) console.log("Utente aggiunto al database: "+ email);
 	}).catch((err) => {
 		if(TEST) console.log("Utente già registrato: "+ email);
@@ -93,24 +95,39 @@ module.exports.createCampo = async function (email,nome, lat, lon) { //creo il c
 /*         Create Sensore         */
 /*************************************/
 // aggiunge alla lista di rilevazioni di un sensore
-module.exports.createSensore = async function (email, campo, id, name) { //creo il sensore sia nella sua tabella, sia per il rispettivo utente
-	db.collection("users").doc(email).collection("campi").doc(campo).collection("sensori").doc(id).create({
-		name: name,
-		stato: "high"
-	}).then(function() {
-		if(TEST) console.log("Sensore "+ id +" aggiunto al database dell'utente: "+ email);
-		db.collection("sensors").doc(id).create({
-			email: email,
-			campo: campo,
-		}).then(function() {
-			if(TEST) console.log("Sensore "+ id +" aggiunto al database dei sensori con riferimento a: "+ email);
-		}).catch(function() {
-			if(TEST) console.log("Sensore "+ id +" non aggiunto al database dell'utente: "+ email);
+module.exports.createSensore = async function (email, campo, name) { //creo il sensore sia nella sua tabella, sia per il rispettivo utente
+	db.collection("users").doc(email).get().then( async (userInstance) => {
+
+		var sid = userInstance.data().sensoricounter + 1;
+		var id = email + "_" + campo + "_" + sid;
+
+		db.collection("users").doc(email).update({
+			"sensoricounter": sid
+		}).then( () => {
+			if(TEST) console.log("sensoricounter di " + email + " aggiornato");
+			db.collection("users").doc(email).collection("campi").doc(campo).collection("sensori").doc(id).create({
+				name: name,
+				stato: "high"
+			}).then(function() {
+				if(TEST) console.log("Sensore "+ id +" aggiunto al database dell'utente: "+ email);
+				db.collection("sensors").doc(id).create({
+					email: email,
+					campo: campo,
+				}).then(function() {
+					if(TEST) console.log("Sensore "+ id +" aggiunto al database dei sensori con riferimento a: "+ email);
+				}).catch(function() {
+					if(TEST) console.log("Sensore "+ id +" non aggiunto al database dell'utente: "+ email);
+				});
+			}).catch(function() {
+				if(TEST) console.log("Sensore "+ id +" non aggiunto al database dell'utente: "+ email);
+			});
+		}).catch((err) => {
+			console.log(err);
 		});
-	}).catch(function() {
-		if(TEST) console.log("Sensore "+ id +" non aggiunto al database dell'utente: "+ email);
+
+	}).catch((err) => {
+		console.log(err);
 	});
-	
 }
 
 /*************************************/
@@ -221,6 +238,40 @@ module.exports.getCampiFromUtente = function (email){
 }
 
 /****************************************/
+/*         DB - getNomeCampiFromUtente      */
+/****************************************/
+
+module.exports.getNomeCampiFromUtente = function (email){
+	return new Promise(function(resolve,reject){
+		var keys = Array();
+		db.collection("users").doc(email).collection("campi").get().then(function(snapshot) {
+			snapshot.forEach(function(userSnapshot) {
+				keys.push([userSnapshot.id,userSnapshot.data().nome]);
+			});
+			resolve(keys);
+		}).catch((y) => reject(y));
+	});
+}
+
+/****************************************/
+/*         DB - getNomeSensoriFromUtente    */
+/****************************************/
+
+
+// restituisce una lista di sensori di un campo di un utente
+module.exports.getNomeSensoriFromCampoUtente = function (email, campo) {
+	return new Promise(function(resolve,reject){
+		var keys = Array();
+		db.collection("users").doc(email).collection("campi").doc(campo).collection("sensori").get().then(function(snapshot) {
+			snapshot.forEach(function(userSnapshot) {
+				keys.push([userSnapshot.id, userSnapshot.data().name]);	
+			});
+			resolve(keys);
+		}).catch((err) => reject(err));
+	});
+}
+
+/****************************************/
 /*         DB - getSensoriFromUtente    */
 /****************************************/
 
@@ -280,6 +331,32 @@ module.exports.getCampiCounter = function (email) {
 	return new Promise(function(resolve, reject) {
 		db.collection("users").doc(email).get().then(function(x) {
 			resolve(x.data().campicounter)
+		}).catch((y) => reject(y));
+	});
+}
+
+/****************************************/
+/*         DB - getSensoriCounter         */
+/****************************************/
+
+module.exports.getSensoriCounter = function (email) {
+	return new Promise(function(resolve, reject) {
+		db.collection("users").doc(email).get().then(function(x) {
+			resolve(x.data().sensoricounter)
+		}).catch((y) => reject(y));
+	});
+}
+
+
+
+/****************************************/
+/*         DB - getInfoCampo		    */
+/****************************************/
+
+module.exports.getInfoCampo = function (email, idcampo) {
+	return new Promise(function(resolve, reject) {
+		db.collection("users").doc(email).collection("campi").doc(idcampo).get().then(function(x) {
+			resolve([x.data().nome, x.data().lat, x.data().lon]);
 		}).catch((y) => reject(y));
 	});
 }
