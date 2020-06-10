@@ -26,7 +26,7 @@ router.get('/campo*', (req, res) => {
 	db.getInfoCampo(umail, campo).then((infoCampo)=>{
 
 		// mi prendo tutti i sensori del campo
-		db.getSensoriFromCampoUtente(umail, campo).then((sensors) => {
+		db.getNomeSensoriFromCampoUtente(umail, campo).then((sensors) => {
 			var lat = infoCampo[1].replace(',', '.')
 			var lon = infoCampo[2].replace(',', '.')
 	
@@ -54,6 +54,7 @@ router.get('/campo*', (req, res) => {
 						humidity: info.humidity,
 						port: process.env.PORT,
 						nomecampo: infoCampo[0],
+						idcampo: campo,
 						sensori: sensors
 					});
 				}
@@ -100,10 +101,10 @@ router.post('/', async (req, res) => {
 
 router.post('/addSensore', async (req, res) => {
 	var umail = req.user.emails[0].value;
-	sensorID = req.body.sensorID;
+	sensorName = req.body.sensorName;
 	campoID = req.body.campoID;
-	await db.createSensore(umail, campoID, sensorID, "s1");
-	res.redirect("/dashboard/campoID");
+	await db.createSensore(umail, campoID, sensorName );
+	res.redirect("/dashboard/"+campoID);
 });
 
 module.exports = router;

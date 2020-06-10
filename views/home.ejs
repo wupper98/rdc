@@ -49,7 +49,7 @@
         <ul class="w3-ul w3-hoverable">
             <% for(var i in campi) { %>
             <li class="w3-display-container">
-                <a class="w3-green" href="http://localhost:<%= port%>/dashboard/<%= campi[i] %>"><%= campi[i]%></a>
+                <a class="w3-green" href="http://localhost:<%= port%>/dashboard/<%= campi[i][0] %>"><%= campi[i][1]%></a>
                 <span onclick="this.parentElement.style.display='none'" class="w3-button w3-display-right"
                     title="Elimina campo">&times;</span>
             </li>
@@ -57,7 +57,7 @@
         </ul>
         <br>
         <button class="w3-button w3-xlarge w3-circle w3-red w3-card-4 w3-right"
-            onclick="window.location.replace('http://localhost:<%= port%>/coordConfig');">+</button>
+            onclick="window.location.replace('http://localhost:<%= port%>/coordConfig');" title="aggiungi campo">+</button>
         <br>
         <div class="w3-center">
             <a href="/logout">Logout</a>

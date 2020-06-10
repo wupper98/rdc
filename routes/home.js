@@ -12,7 +12,7 @@ router.get('/', (req, res) => {
 
     if( auth ){
         var umail = req.user.emails[0].value;
-        db.getCampiFromUtente(umail).then((campi) => {
+        db.getNomeCampiFromUtente(umail).then((campi) => {
             res.render('home.ejs', {
                 campi: campi,
                 port: PORT,
