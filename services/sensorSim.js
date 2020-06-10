@@ -65,9 +65,6 @@ function sendMoistureUpdate() {
   client.publish(moistureQueueName, moistureLVL);
 }
 
-/**
- * Want to notify controller that garage is disconnected before shutting down
- */
 function handleAppExit (options, err) {
   if (err) {
     console.log(err.stack);

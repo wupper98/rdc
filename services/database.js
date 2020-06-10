@@ -1,5 +1,10 @@
 const TEST = process.env.TEST;
 
+// Modulo per costruire il percorso a partire dalla 
+// base directory del progetto (dove è app.js)
+var baseDir = require('app-root-path');
+console.log(baseDir);
+
 //Per async
 var async = require("async");
 //Per le promise
@@ -7,7 +12,7 @@ var Promise = require('promise');
 
 // Setup per accedere a firebase
 var admin = require("firebase-admin");
-var serviceAccount = "private/agrismart-c2656-firebase-adminsdk-1en4p-ba81ef792e.json";
+var serviceAccount =  baseDir + "/private/agrismart-c2656-firebase-adminsdk-1en4p-ba81ef792e.json";
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: "https://agrismart-c2656.firebaseio.com"

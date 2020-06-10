@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 const mqtt = require('mqtt')
-const db = require("./database");
+const db = require("../services/database");
 const client = mqtt.connect('mqtt://broker.hivemq.com')
 
 var sensorState = ''
@@ -59,7 +59,10 @@ function handleSensorConnected(message) {
 }
 
 function handleSensorState(message, sensorID) {
-	console.log("Sensor %s state %s", sensorID, message);
+	db.getSensoreFromId(sensorID, (data) => {
+		console.log("Sensor %s state %s", sensorID, message);
+		console.log(data);
+	})
 	sensorState = message;
 }
 

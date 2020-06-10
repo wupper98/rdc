@@ -2,7 +2,7 @@
   "name": "agrismart",
   "version": "1.0.0",
   "description": "Agrismart è il progetto sviluppato da Andrea Andreani, Ermanno Bartoli, Gianluca De Carlo e Lorenzo Diaco per l'esame di Reti di Calcolatori.   Agrismart è una web app che consente agli utenti di tenere sotto controllo il loro terreno  tracciandone umidità, temperatura ed eventi come l'innaffiamento (grazie a dei sensori appartenenti al mondo IOT) per permettere una gestione più responsabile ed efficace. Tutto questo è integrato con Google Calendar e con delle API prodotte da noi che consentiranno all'utente di ottenere l'intera lista degli eventi per poi utilizzarla a proprio piacimento.",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "start": "node agrismart.js false",
     "test": "node agrismart.js true"
@@ -27,6 +27,7 @@
   "dependencies": {
     "@google-cloud/firestore": "^3.8.0",
     "amqplib": "^0.5.6",
+    "app-root-path": "^3.0.0",
     "async": "^3.2.0",
     "auth": "0.0.9",
     "body-parser": "^1.19.0",
@@ -34,8 +35,8 @@
     "ejs": "^3.1.3",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
-    "mqtt": "^4.1.0",
     "firebase-admin": "^8.12.1",
+    "mqtt": "^4.1.0",
     "passport": "^0.4.1",
     "passport-google-oauth20": "^2.0.0",
     "promise": "^8.1.0",
