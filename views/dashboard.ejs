@@ -93,13 +93,13 @@ Wheater:     <%= weather %>
 				<ul class="w3-ul w3-hoverable">
 					<% for(var i in sensori) { %>
 					<li class="w3-display-container">
-						<p title="<%= sensori[i][0] %>"><%= sensori[i][1] %></p>
-						<span onclick="this.parentElement.style.display='none'" class="w3-button w3-display-right"
-							title="Elimina sensore">&times;</span>
+						<button class="w3-btn w3-hover-black" title="<%= sensori[i][0] %>" id="<%= sensori[i][1] %>" onclick="displaySensor('<%= sensori[i][1] %>')"><%= sensori[i][1] %></button>
+						<span onclick="this.parentElement.style.display='none'" class="w3-button w3-display-right" title="Elimina sensore" >&times;</span>
 					</li>
 					<% } %>
 				</ul>
 				<!-- Fine lista -->
+				<br>
 				<div class="w3-container w3-right">
 					<button id="addSensorButton" class="w3-button w3-xlarge w3-circle w3-red w3-card-4"
 						onclick="showAddSensorForm()" title="Aggiungi un sensore">+</button>
@@ -116,7 +116,7 @@ Wheater:     <%= weather %>
 			</div>
 			<div class="w3-container w3-half">
 				<div class="w3-black w3-center w3-allerta">
-					<h4>Umidità registrata</h4>
+					<h4 id="displaySensorName" >Umidità da: <%= sensori[0][1] %></h4>
 				</div>
 				<div id="chartContainer" style="height: 370px; width: 100%;"></div>
 			</div>
@@ -162,9 +162,6 @@ Wheater:     <%= weather %>
 
 			var chart = new CanvasJS.Chart("chartContainer", {
 				theme: "dark1",
-				title: {
-					text: "Live Data"
-				},
 				axisY: {
 					title: "Umidità",
 					suffix: "%"
@@ -209,6 +206,20 @@ Wheater:     <%= weather %>
 				$.getJSON("https://canvasjs.com/services/data/datapoints.php?xstart=" + xValue + "&ystart=" + yValue + "&length=" + newDataCount + "type=json", addData);
 			}
 
+		}
+	</script>
+	
+	<!-- Display sensore -->
+	<script>
+		function displaySensor( name ){
+			document.getElementById("displaySensorName").innerHTML = "Umidità da: " + name;
+
+			$.get(
+				"http://localhost:<%= port %>/"+"dashboard/getRilevazioni/" + document.getElementById(name).title,
+				function(data){
+					alert(data);
+				}
+			);
 		}
 	</script>
 </body>

@@ -107,4 +107,21 @@ router.post('/addSensore', async (req, res) => {
 	res.redirect("/dashboard/"+campoID);
 });
 
+router.get('/getRilevazioni/*', async (req, res) => {
+	var sensorID = req.originalUrl.split('/')[3];
+
+	res.send('ok')
+
+	// non riesco a prendere le rilevazioni
+	// magari in un formato sarebbero carine
+
+	/*db.getRilevazioniFromSensorID(sensorID).then(async (rilevazioni) => {
+		res.send('ok');
+		console.log(rilevazioni);
+	}).catch((err) => {
+		console.log(err)
+	});*/
+
+});
+
 module.exports = router;
