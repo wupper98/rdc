@@ -11,12 +11,15 @@ require('dotenv').config()
 
 const app = express();
 const PORT = process.env.PORT;
+//const swaggerUi = require('swagger-ui-express');
+//const swaggerDocument = require("private/swagger.json");
 var TEST = process.env.TEST;
 
 // Configurazioni per il corretto funzionamento dell'app
 app.set('view engine', 'ejs');
 app.use(express.static(__dirname + '/public'));
 app.use(bodyparser.urlencoded({ extended: false }));
+//app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Questa sezione è dedicata alla gestione del protocollo oauth insieme con la funzione di logout
 app.use(session({
