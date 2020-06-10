@@ -28,13 +28,9 @@ let db = admin.firestore();
 /*         Create User Firebase  	 */
 /*************************************/
 
-module.exports.createUser = async function (email) { //creo l'utente
+module.exports.createUser = function (email) { //creo l'utente
 	let instance = db.collection("users").doc(email);
-	instance.create({campicounter: 0, sensoricounter: 0}).then(function() {
-		if(TEST) console.log("Utente aggiunto al database: "+ email);
-	}).catch((err) => {
-		if(TEST) console.log("Utente già registrato: "+ email);
-	});
+	return instance.create({campicounter: 0, sensoricounter: 0});
 }
 
 /*************************************/
@@ -57,31 +53,32 @@ module.exports.getAllUtenti = function (){
 /*         CreateCampo Firebase         */
 /*************************************/
 
-module.exports.createCampo = async function (email,nome, lat, lon) { //creo il campo per l'utente e ritorna l'id
+module.exports.createCampo =  function (email,nome, lat, lon) { //creo il campo per l'utente 
+	return new Promise(function(resolve,reject){
+		db.collection("users").doc(email).get().then(  (userInstance) => {
+			var cid = userInstance.data().campicounter + 1;
+			var nomeCampo = "campo" + cid.toString();
+			if(TEST) console.log("Provo a creare " + nomeCampo);
 
-	db.collection("users").doc(email).get().then( async (userInstance) => {
-		var cid = userInstance.data().campicounter + 1;
-		var nomeCampo = "campo" + cid.toString();
-		if(TEST) console.log("Provo a creare " + nomeCampo);
-
-		db.collection("users").doc(email).update({
-			"campicounter": cid
-		}).then( async () => {
-			if(TEST) console.log("[+] campicounter aggiornato");
-			db.collection("users").doc(email).collection("campi").doc(nomeCampo).set({
-				nome: nome,
-				lat: lat,
-				lon: lon,
-			}).then( async function() {
-				if(TEST) console.log("Campo "+ nomeCampo +" aggiunto al database dell'utente: "+ email);
-				
-			}).catch((err) => {
-				if(TEST) console.log("Campo già registrato: "+ nomeCampo);
+			db.collection("users").doc(email).update({
+				"campicounter": cid
+			}).then(  () => {
+				if(TEST) console.log("[+] campicounter aggiornato");
+				db.collection("users").doc(email).collection("campi").doc(nomeCampo).set({
+					nome: nome,
+					lat: lat,
+					lon: lon,
+				}).then(  function() {
+					if(TEST) console.log("Campo "+ nomeCampo +" aggiunto al database dell'utente: "+ email);
+					resolve();
+				}).catch((err) => {
+					if(TEST) console.log("Campo già registrato: "+ nomeCampo);
+				});
+			}).catch((error) => {
+				console.log(error);
 			});
-		}).catch((error) => {
-			console.log(error);
-		});
-	}).catch((err) => {console.log(err);});
+		}).catch((err) => {console.log(err);});
+	});
 	
 }
 
@@ -90,8 +87,9 @@ module.exports.createCampo = async function (email,nome, lat, lon) { //creo il c
 /*         Create Sensore         */
 /*************************************/
 // aggiunge alla lista di rilevazioni di un sensore
-module.exports.createSensore = async function (email, campo, name) { //creo il sensore sia nella sua tabella, sia per il rispettivo utente
-	db.collection("users").doc(email).get().then( async (userInstance) => {
+module.exports.createSensore = function (email, campo, name) { //creo il sensore sia nella sua tabella, sia per il rispettivo utente
+	return new Promise(function(resolve,reject){ 
+		db.collection("users").doc(email).get().then( (userInstance) => {
 
 		var sid = userInstance.data().sensoricounter + 1;
 		var id = email + "_" + campo + "_" + sid;
@@ -110,6 +108,7 @@ module.exports.createSensore = async function (email, campo, name) { //creo il s
 					campo: campo,
 				}).then(function() {
 					if(TEST) console.log("Sensore "+ id +" aggiunto al database dei sensori con riferimento a: "+ email);
+					resolve();
 				}).catch(function() {
 					if(TEST) console.log("Sensore "+ id +" non aggiunto al database dell'utente: "+ email);
 				});
@@ -120,16 +119,18 @@ module.exports.createSensore = async function (email, campo, name) { //creo il s
 			console.log(err);
 		});
 
-	}).catch((err) => {
-		console.log(err);
+		}).catch((err) => {
+			console.log(err);
+		});
 	});
+
 }
 
 /*************************************/
 /*         Create Rilevazione         */
 /*************************************/
 
-module.exports.createRilevazione = async function (email, campo, sensore, umidita, data) { //creo innaffiamento
+module.exports.createRilevazione = function (email, campo, sensore, umidita, data) { //creo innaffiamento
 	db.collection("users").doc(email).collection("campi").doc(campo).collection("sensori").doc(sensore).collection("innaffiamenti").add({
 		umidita: umidita,
 		data: data
@@ -138,7 +139,7 @@ module.exports.createRilevazione = async function (email, campo, sensore, umidit
 	});
 }
 
-module.exports.updateStatoSensore = async function (sensore, stato) {
+module.exports.updateStatoSensore = function (sensore, stato) {
 	db.collection("sensors").doc(sensore).get().then((x) => {
 		if (!x.exists) {
 			if(TEST) console.log('[+] No such sensor!');
@@ -190,8 +191,8 @@ module.exports.getRilevazioniFromDocumento = function (data, id, callback){
 module.exports.getRilevazioniFromSensorID = function (id) {
 	return new Promise(function(resolve, reject) {
 		async.waterfall([
-			async.apply(getSensoreFromId, id),
-			getRilevazioniFromDocumento,
+			async.apply(module.exports.getSensoreFromId, id),
+			module.exports.getRilevazioniFromDocumento,
 		], (err, result) => {
 			if(err != null) reject(err);
 			else resolve(result);
@@ -309,8 +310,8 @@ function getSensorifromArray(x, email, callback){
 module.exports.getSensorifromUtente = function (email) {
 	return new Promise(function(resolve, reject) {
 		async.waterfall([
-			async.apply(getArrayCampiFromUtente, email),
-			getSensorifromArray,
+			async.apply(module.exports.getArrayCampiFromUtente, email),
+			module.exports.getSensorifromArray,
 		], (err, result) => {
 			if(err != null) reject(err);
 			else resolve(result);
