@@ -127,8 +127,8 @@ router.get('/getRilevazioni/*',  (req, res) => {
 			};
 			for( i = 0; i < rilevazioni.length; i++ ){
 				values.data.push({
-					//x: new Date(rilevazioni[i][0]),
-					x: parseInt(i),
+					x: new Date(rilevazioni[i][0]),
+					// x: parseInt(i),
 					y: parseFloat(rilevazioni[i][1])
 				})
 			}

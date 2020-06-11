@@ -170,11 +170,13 @@ Wheater:     <%= weather %>
 			},
 			axisX: {
 				title: "Data",
+				intervalType: "minute",
 			},
 			data: [{
 				type: "splineArea",
 				color: "rgba(54,158,173,.7)",
 				markerSize: 5,
+				xValueType: "dateTime",
 				yValueFormatString: "##0.##%",
 				dataPoints: values.data
 			}]

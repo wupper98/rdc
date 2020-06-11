@@ -18,7 +18,7 @@ function getTimeStamp() {
 		minute + ":" + seconds);
 	var timestamp = year + "-" + month + "-" + date + "-" + hour + ":" +
 	minute + ":" + seconds;
-	return timestamp;
+	return Date.now();
 }
 
 var sensorState = ''

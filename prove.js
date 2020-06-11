@@ -16,3 +16,5 @@ console.log(t);
 
 var tt = new Date(2020, 0);
 console.log(tt);
+
+console.log(Date.now());

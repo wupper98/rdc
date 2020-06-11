@@ -136,7 +136,7 @@ module.exports.createSensore = function (email, campo, name) { //creo il sensore
 /*************************************/
 
 module.exports.createRilevazione = function (email, campo, sensore, umidita, data) { //creo innaffiamento
-	db.collection("users").doc(email).collection("campi").doc(campo).collection("sensori").doc(sensore).collection("innaffiamenti").add({
+	db.collection("users").doc(email).collection("campi").doc(campo).collection("sensori").doc(sensore).collection("innaffiamenti").doc(data.toString()).create({
 		umidita: umidita,
 		data: data
 	}).then(function() {
