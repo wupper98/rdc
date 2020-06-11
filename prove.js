@@ -8,5 +8,11 @@ let hour = date_ob.getHours();
 let minute = date_ob.getMinutes();
 let seconds = date_ob.getSeconds();
 
-console.log(year + "-" + month + "-" + date + "-" + hour + ":" +
-    minute + ":" + seconds);
+var timestamp = year + "-" + month + "-" + date + "-" + hour + ":" + minute + ":" + seconds
+console.log(timestamp);
+
+var t = new Date(timestamp);
+console.log(t);
+
+var tt = new Date(2020, 0);
+console.log(tt);

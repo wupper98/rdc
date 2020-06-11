@@ -14,7 +14,7 @@ function getTimeStamp() {
 	let minute = date_ob.getMinutes();
 	let seconds = date_ob.getSeconds();
 
-	console.log(year + "-" + month + "-" + date + "-" + hour + ":" +
+	console.log(year + "-" + month + "-" + date + "T" + hour + ":" +
 		minute + ":" + seconds);
 	var timestamp = year + "-" + month + "-" + date + "-" + hour + ":" +
 	minute + ":" + seconds;
