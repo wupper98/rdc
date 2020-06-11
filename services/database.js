@@ -137,10 +137,9 @@ module.exports.createSensore = function (email, campo, name) { //creo il sensore
 
 module.exports.createRilevazione = function (email, campo, sensore, umidita, data) { //creo innaffiamento
 	db.collection("users").doc(email).collection("campi").doc(campo).collection("sensori").doc(sensore).collection("innaffiamenti").add({
-		umidita: umidita.toString(),
+		umidita: umidita,
 		data: data
 	}).then(function() {
-		console.log(umidita);
 		if(TEST) console.log("Rilevamento del sensore "+ sensore +" aggiunto al database dell'utente: "+ email);
 	});
 }

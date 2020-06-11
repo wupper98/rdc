@@ -91,11 +91,9 @@ function handleSensorMoisture(message, sensorID) {
 	var email = toParse[0];
 	var campo = toParse[1];
 	var senID = toParse[2];
-	db.createRilevazione(email, campo, sensorID,
-		message, getTimeStamp()).then( () => {
-			console.log("Sensor %s moisture level: %s", sensorID, message);
-			moistureLVL = message;
-		}).catch((err) => {console.log(err)});
+	db.createRilevazione(email, campo, sensorID, message.toString(), getTimeStamp())
+	console.log("Sensor %s moisture level: %s", sensorID, message);
+	// moistureLVL = message;
 }
 
 // Chiede al sensore un update del suo stato
