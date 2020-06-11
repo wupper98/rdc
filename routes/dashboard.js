@@ -94,16 +94,20 @@ router.post('/', async (req, res) => {
 	var latitude = req.body.latitude;
 	var longitude = req.body.longitude;
 
-	db.createUser(umail).then(function() {
-		console.log("Utente aggiunto al database: "+ email);
-	}).catch((err) => {
-		console.log("Utente già registrato: "+ email);
-	}).finally((err) => {
-		db.createCampo(umail, nome, latitude, longitude).then((resprom) => {
-			res.redirect("/");
-		})	
-	});
-
+	if( nome == "" || latitude == "" || longitude == "" ){
+		res.send("[ERR] Impossibile creare il campo. Inserisci tutti i valori e riprova");
+	}
+	else{
+		db.createUser(umail).then(function() {
+			console.log("Utente aggiunto al database: "+ email);
+		}).catch((err) => {
+			console.log("Utente già registrato: "+ umail);
+		}).finally((err) => {
+			db.createCampo(umail, nome, latitude, longitude).then((resprom) => {
+				res.redirect("/");
+			})	
+		});
+	}
 });
 
 router.post('/addSensore', (req, res) => {
@@ -111,11 +115,15 @@ router.post('/addSensore', (req, res) => {
 	sensorName = req.body.sensorName;
 	campoID = req.body.campoID;
 
-	db.createSensore(umail, campoID, sensorName ).then ((id) => {
-		sensorSim.initSensore(id); // Avvia la simulazione del sensore appena aggiunto dall'utente (test più facile)
-		res.redirect("/dashboard/"+campoID);
-	});
-
+	if(sensorName.length == 0 ){
+		res.send("[ERR] Impossibile aggiungere un sensore senza nome.");
+	}
+	else{
+		db.createSensore(umail, campoID, sensorName ).then ((id) => {
+			sensorSim.initSensore(id); // Avvia la simulazione del sensore appena aggiunto dall'utente (test più facile)
+			res.redirect("/dashboard/"+campoID);
+		});
+	}
 });
 
 router.get('/getRilevazioni/*',  (req, res) => {
