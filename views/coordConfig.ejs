@@ -3,25 +3,38 @@
 <html>
 <head>
     <title>Home - coordinates selection</title>
-    <link href="/css/style.css" rel="stylesheet" type="text/css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="/css/style.css" rel="stylesheet" type="text/css">
+	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Allerta+Stencil">
+	<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
 </head>
 <body>
-    <h1>Benvenuto, <%= nomeutente %></h1>
-    <h2>Inserisci le coordinate del tuo campo</h2>
-    <form action="http://localhost:<%= port %>/dashboard" method="post">
-        Nome:
-        <br>
-        <input type="text" name="nome" placeholder="Nome campo">
-        <br>
-        Latitudine:
-        <br>
-        <input type="text" name="latitude" value="0">
-        <br>
-        Longitudine:
-        <br>
-        <input type="text" name="longitude" value="0">
-        <br>
-        <input type="submit" value="Invia">
-    </form>
+    <div class="w3-container w3-theme-l1 full-height">
+        <div class="w3-black w3-center w3-allerta">
+			<h3>Benvenuto <%= nomeutente %></h3>
+			<a href="http://localhost:<%= port %>/">HOME</a> -
+			<a href="http://localhost:<%= port %>/logout">Logout</a>
+        </div>
+        <div class="w3-container w3-left">
+            <h3>Inserisci le coordinate del tuo campo</h3>
+            <form action="http://localhost:<%= port %>/dashboard" method="post">
+                Nome:
+                <br>
+                <input type="text" name="nome" placeholder="Nome campo">
+                <br>
+                Latitudine:
+                <br>
+                <input type="text" name="latitude" placeholder="0">
+                <br>
+                Longitudine:
+                <br>
+                <input type="text" name="longitude" placeholder="0">
+                <br>
+                <br>
+                <input class="w3-btn w3-red" type="submit" value="Aggiungi">
+            </form>
+        </div>
+    </div>
 </body>
 </html>

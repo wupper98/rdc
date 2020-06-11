@@ -113,7 +113,7 @@ module.exports.createSensore = function (email, campo, name) { //creo il sensore
 					campo: campo,
 				}).then(function() {
 					if(TEST) console.log("Sensore "+ id +" aggiunto al database dei sensori con riferimento a: "+ email);
-					resolve();
+					resolve(id);
 				}).catch(function() {
 					if(TEST) console.log("Sensore "+ id +" non aggiunto al database dell'utente: "+ email);
 				});
@@ -136,7 +136,7 @@ module.exports.createSensore = function (email, campo, name) { //creo il sensore
 /*************************************/
 
 module.exports.createRilevazione = function (email, campo, sensore, umidita, data) { //creo innaffiamento
-	db.collection("users").doc(email).collection("campi").doc(campo).collection("sensori").doc(sensore).collection("innaffiamenti").add({
+	db.collection("users").doc(email).collection("campi").doc(campo).collection("sensori").doc(sensore).collection("innaffiamenti").doc(data.toString()).create({
 		umidita: umidita,
 		data: data
 	}).then(function() {
@@ -150,7 +150,7 @@ module.exports.updateStatoSensore = function (sensore, stato) {
 			if(TEST) console.log('[+] No such sensor!');
 		} else {
 			if(TEST) console.log('Document data: ', x.data());
-			db.collection("users").doc(x.email).collection("campi").doc(x.campo).collection("sensori").doc(sensore).update({
+			db.collection("users").doc(x.data().email).collection("campi").doc(x.data().campo).collection("sensori").doc(sensore).update({
 				stato: stato
 			})
 		}
@@ -265,7 +265,7 @@ module.exports.getNomeSensoriFromCampoUtente = function (email, campo) {
 		var keys = Array();
 		db.collection("users").doc(email).collection("campi").doc(campo).collection("sensori").get().then(function(snapshot) {
 			snapshot.forEach(function(userSnapshot) {
-				keys.push([userSnapshot.id, userSnapshot.data().name]);	
+				keys.push([userSnapshot.id, userSnapshot.data().name, userSnapshot.data().stato]);	
 			});
 			resolve(keys);
 		}).catch((err) => reject(err));

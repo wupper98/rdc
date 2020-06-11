@@ -1,5 +1,6 @@
 const db = require("../services/database")
 const path = require('path')
+const sensorSim = require("../services/sensorSim");
 const express = require('express')
 const request = require('request')
 var async = require("async");
@@ -30,6 +31,8 @@ router.get('/campo*', (req, res) => {
 		db.getNomeSensoriFromCampoUtente(umail, campo).then((sensors) => {
 			var lat = infoCampo[1].replace(',', '.')
 			var lon = infoCampo[2].replace(',', '.')
+
+			console.log(sensors);
 	
 			var url = OWM_URL_1 + 'lat=' + lat
 			+ '&lon=' + lon + '&exclude=' + 'minutely,hourly,current' + OWM_URL_2
@@ -108,9 +111,11 @@ router.post('/addSensore', (req, res) => {
 	sensorName = req.body.sensorName;
 	campoID = req.body.campoID;
 
-	db.createSensore(umail, campoID, sensorName ).then ((x) => {
+	db.createSensore(umail, campoID, sensorName ).then ((id) => {
+		sensorSim.initSensore(id); // Avvia la simulazione del sensore appena aggiunto dall'utente (test più facile)
 		res.redirect("/dashboard/"+campoID);
 	});
+
 });
 
 router.get('/getRilevazioni/*',  (req, res) => {
@@ -120,34 +125,30 @@ router.get('/getRilevazioni/*',  (req, res) => {
 	// magari in un formato sarebbero carine
 
 	db.getRilevazioniFromSensorID(sensorID).then(async (rilevazioni) => {
-		res.send(rilevazioni);
-		console.log(rilevazioni[0][1]);
+		
+		new Promise( function(resolve, reject){
+			var values = {
+				"data":[]
+			};
+			//console.log(rilevazioni);
+
+			for( i = 0; i < rilevazioni.length; i++ ){
+				values.data.push({
+					x: rilevazioni[i][0],
+					y: parseFloat(rilevazioni[i][1])
+				})
+			}
+			//console.log(values);
+			resolve(values);
+		}).then( (values) => {
+			res.send(values);
+		}).catch( (err) => {
+			console.log(err);
+		});	
 	}).catch((err) => {
 		console.log(err)
 	});
 
 });
-
-function getTimeStamp() {
-	let ts = Date.now();
-
-	let date_ob = new Date(ts);
-	let date = date_ob.getDate();
-	let month = date_ob.getMonth() + 1;
-	let year = date_ob.getFullYear();
-	let hour = date_ob.getHours();
-	let minute = date_ob.getMinutes();
-	let seconds = date_ob.getSeconds();
-
-	console.log(year + "-" + month + "-" + date + "-" + hour + ":" +
-		minute + ":" + seconds);
-	var timestamp = year + "-" + month + "-" + date + "-" + hour + ":" +
-	minute + ":" + seconds;
-	return timestamp;
-}
-
-router.get("/prova", (req, res) => {
-	db.createRilevazione("aandreani1998@gmail.com", "campo1", "aandreani1998@gmail.com_campo1_1", (0.64).toString(), getTimeStamp());
-})
 
 module.exports = router;

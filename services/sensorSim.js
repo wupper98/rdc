@@ -1,19 +1,16 @@
 #!/usr/bin/env node
 const mqtt = require('mqtt')
 var temporal = require('temporal')
-var client =  mqtt.connect('mqtt://broker.hivemq.com');
+var client;
+var baseDir = require('app-root-path');
 
 var sensorID;
-if( process.argv[2] == null ) {
-    console.log("[!] Usage: node sensorSim.js <sensorID>");
-    process.exit(1);
-}
-else sensorID = process.argv[2].toString();
+var sendUpdateQueueName;
+var stateQueueName;
+var moistureQueueName;
+var connectQueueName;
 
-var sendUpdateQueueName = sensorID + "/sendUpdate";
-var stateQueueName = sensorID + "/state";
-var moistureQueueName = sensorID + "/moisture"
-var connectQueueName = "sensor/connected";
+
 
 // Sensor publishes on sensorID/state; sensorID/moisture; sensor/connected
 // Sensor subscribes to sensorID/sendUpdate
@@ -23,37 +20,48 @@ var connectQueueName = "sensor/connected";
 
 
 /*
- * Sensor status: high(0), mid(1), low(2), critical(3). Default: high
- * Moisture level: random number between 0 and 1
+* Sensor status: high(0), mid(1), low(2), critical(3). Default: high
+* Moisture level: random number between 0 and 1
 */
 var state = 'high'
 var moistureLVL = '0.6'
 
-client.on('connect', () => {
-  client.subscribe(sendUpdateQueueName); // Coda da cui ricevere richieste
+// avvia la simulazione del sensore
+module.exports.initSensore = (sID) => {
+  sensorID = sID;
+  client =  mqtt.connect('mqtt://broker.hivemq.com');
 
-  client.publish(connectQueueName, sensorID);
-})
-
-client.on('message', (topic, message) => {
-  console.log('[+] Ricevuto: %s', message);
-  switch (message) {
-		case 'start':
-			sendStateUpdate();
-			sendMoistureUpdate();
-			break;
-    case 'state':
-      sendStateUpdate();
-      break;
-    case 'moisture':
-      sendMoistureUpdate();
-      break;
-    case 'all':
-			sendStateUpdate();
-			sendMoistureUpdate();
-			break;
-  }
-})
+  client.on('connect', () => {
+    sendUpdateQueueName = sensorID + "/sendUpdate";
+    stateQueueName = sensorID + "/state";
+    moistureQueueName = sensorID + "/moisture"
+    connectQueueName = "sensor/connected";
+    client.subscribe(sendUpdateQueueName); // Coda da cui ricevere richieste
+    
+    client.publish(connectQueueName, sensorID);
+  });
+  
+  client.on('message', (topic, message) => {
+    console.log('[+] Ricevuto: %s', message);
+    switch (message) {
+      case 'start':
+        sendStateUpdate();
+        sendMoistureUpdate();
+        break;
+        case 'state':
+          sendStateUpdate();
+          break;
+          case 'moisture':
+            sendMoistureUpdate();
+            break;
+            case 'all':
+              sendStateUpdate();
+        sendMoistureUpdate();
+        break;
+    }
+  });
+  loop();
+}
 
 function sendStateUpdate() {
   console.log("[+] Sent state %s", state);
@@ -95,22 +103,24 @@ process.on('uncaughtException', handleAppExit.bind(null, {
 
 // Simulazione misurazione ogni 5 secondi
 
-temporal.loop(10000, function() {
-  moistureLVL = Math.random().toFixed(2);
-  switch (Math.round(Math.random() * 4 - 1)) {
-    case 0:
-      state = 'high';
-      break;
-    case 1:
-      state = 'mid';
-      break;
-    case 2:
-      state = 'low';
-      break;
-    case 3:
-      state = 'critical';
-      break;
-  }
-  sendStateUpdate();  
-  sendMoistureUpdate();
-})
+function loop() {
+  temporal.loop(5000, function() {
+    moistureLVL = Math.random().toFixed(2);
+    switch (Math.round(Math.random() * 4 - 1)) {
+      case 0:
+        state = 'high';
+        break;
+      case 1:
+        state = 'mid';
+        break;
+      case 2:
+        state = 'low';
+        break;
+      case 3:
+        state = 'critical';
+        break;
+    }
+    sendStateUpdate();  
+    sendMoistureUpdate();
+  })
+}

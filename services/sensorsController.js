@@ -14,11 +14,11 @@ function getTimeStamp() {
 	let minute = date_ob.getMinutes();
 	let seconds = date_ob.getSeconds();
 
-	console.log(year + "-" + month + "-" + date + "-" + hour + ":" +
+	console.log(year + "-" + month + "-" + date + "T" + hour + ":" +
 		minute + ":" + seconds);
 	var timestamp = year + "-" + month + "-" + date + "-" + hour + ":" +
 	minute + ":" + seconds;
-	return timestamp;
+	return Date.now();
 }
 
 var sensorState = ''
@@ -79,10 +79,9 @@ function handleSensorConnected(message) {
 }
 
 function handleSensorState(message, sensorID) {
-	db.getSensoreFromId(sensorID, (data) => {
-		console.log("Sensor %s state %s", sensorID, message);
-		console.log(data);
-	})
+	db.updateStatoSensore(sensorID, message.toString());
+	console.log("Sensor %s state %s", sensorID, message);
+
 	sensorState = message;
 }
 
