@@ -156,58 +156,33 @@ Wheater:     <%= weather %>
 
 	<!-- Script per il grafico dell'umidità-->
 	<script>
-		window.onload = function () {
+		function renderChart ( values ) {
+		
+			console.log(values.data);
 
-			var dataPoints = [];
-
-			var chart = new CanvasJS.Chart("chartContainer", {
-				theme: "dark1",
-				axisY: {
-					title: "Umidità",
-					suffix: "%"
-				},
-				axisX: {
-					title: "Data"
-				},
-				data: [{
-					type: "splineArea",
-					color: "rgba(54,158,173,.7)",
-					markerSize: 5,
-					dataPoints: dataPoints
-				}]
+		var chart = new CanvasJS.Chart("chartContainer", {
+			animationEnabled: true,
+			zoomEnabled: true,
+			theme: "dark1",
+			axisY: {
+				title: "Umidità",
+				suffix: "%",
+			},
+			axisX: {
+				title: "Data",
+			},
+			data: [{
+				type: "splineArea",
+				color: "rgba(54,158,173,.7)",
+				markerSize: 5,
+				yValueFormatString: "##0.##%",
+				dataPoints: values.data
+			}]
 			});
-			updateData();
-
-			// Initial Values
-			var xValue = 0;
-			var yValue = 10;
-			var newDataCount = 6;
-
-			function addData(data) {
-				if (newDataCount != 1) {
-					$.each(data, function (key, value) {
-						dataPoints.push({ x: value[0], y: parseInt(value[1]) });
-						xValue++;
-						yValue = parseInt(value[1]);
-					});
-				} else {
-					//dataPoints.shift();
-					dataPoints.push({ x: data[0][0], y: parseInt(data[0][1]) });
-					xValue++;
-					yValue = parseInt(data[0][1]);
-				}
-
-				newDataCount = 1;
-				chart.render();
-				setTimeout(updateData, 1500);
-			}
-
-			function updateData() {
-				$.getJSON("https://canvasjs.com/services/data/datapoints.php?xstart=" + xValue + "&ystart=" + yValue + "&length=" + newDataCount + "type=json", addData);
-			}
-
+		chart.render();
+		
 		}
-	</script>
+		</script>
 	
 	<!-- Display sensore -->
 	<script>
@@ -217,7 +192,7 @@ Wheater:     <%= weather %>
 			$.get(
 				"http://localhost:<%= port %>/"+"dashboard/getRilevazioni/" + document.getElementById(name).title,
 				function(data){
-					alert(data);
+					renderChart(data)
 				}
 			);
 		}
