@@ -125,10 +125,17 @@ router.get('/getRilevazioni/*',  (req, res) => {
 			var values = {
 				"data":[]
 			};
+			console.log(rilevazioni);
+			
 			for( i = 0; i < rilevazioni.length; i++ ){
 				values.data.push({
+<<<<<<< HEAD
 					x: new Date(rilevazioni[i][0]),
 					// x: parseInt(i),
+=======
+					//x: new Date(rilevazioni[i][0]),
+					x: rilevazioni[i][0],
+>>>>>>> afb3d72185299c93cc908037d08749fe63d30c25
 					y: parseFloat(rilevazioni[i][1])
 				})
 			}
