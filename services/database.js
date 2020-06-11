@@ -361,3 +361,46 @@ module.exports.getInfoCampo = function (email, idcampo) {
 		}).catch((y) => reject(y));
 	});
 }
+
+/****************************************/
+/*         DB - isToken		   		    */
+/****************************************/
+module.exports.isToken= function(tok) {
+	return new Promise( (resolve, reject) =>{
+		db.collection("tokens").get().then(function(snapshot){
+			snapshot.forEach(function (tokenSnapshot) {
+				console.log("token: " + tokenSnapshot.id);
+				console.log("mytok:" + tok);
+				if (tok == tokenSnapshot.id) {
+					console.log("TROVATO");
+					resolve(true)
+				}
+			});
+			reject(false);
+		})
+	})
+}
+
+/****************************************/
+/*         DB - getStatosensore		    */
+/****************************************/
+module.exports.getStatoSensore= function(utenteId,campoId,sensorId) {
+	return new Promise( (resolve, reject) => {
+		db.collection("users").doc(utenteId).collection("campi").doc(campoId).collection("sensori").doc(sensorId).get().then( (x) => resolve(x.data().stato)).catch((x) =>reject(x));
+	})
+}
+
+/****************************************/
+/*         DB - deleteSensore		    */
+/****************************************/
+module.exports.deleteSensore= function(utenteId,campoId,sensorId) {
+	return db.collection("users").doc(utenteId).collection("campi").doc(campoId).collection("sensori").doc(sensorId).delete();
+}
+
+/****************************************/
+/*         DB - deleteCampo		    */
+/****************************************/
+module.exports.deleteCampo= function(utenteId,campoId) {
+	return db.collection("users").doc(utenteId).collection("campi").doc(campoId).delete();
+}
+

@@ -81,6 +81,10 @@ app.get('/logout', function(req, res) {
 var home = require('./routes/home');
 app.use('/', home);
 
+// Controller per le API
+var apiController = require('./routes/apiService');
+app.use('/api', apiController)
+
 // funzione da eseguire prima di ogni richiesta che non sia '/'
 // oppure una risorsa necessaria ad effettuare il login
 // verifica che l'utente sia loggato
@@ -99,6 +103,7 @@ app.use('/coordConfig', coordConfig);
 // Controller per le risorse dashboard
 var dashboard = require('./routes/dashboard');
 app.use('/dashboard', dashboard);
+
 
 // Avvio del server
 var server = app.listen(PORT, function () {

@@ -1,26 +1,22 @@
 {
     "swagger" : "2.0",
     "info" : {
-      "description" : "This is a simple API",
+      "description" : "API per l'accesso diretto ad alcune funzioni di Agrismart",
       "version" : "1.0.0",
-      "title" : "Simple Inventory API",
+      "title" : "Agrismart API",
       "contact" : {
-        "email" : "you@your-company.com"
+        "email" : "agrismart@agrismart.com"
       },
       "license" : {
         "name" : "Apache 2.0",
         "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
       }
     },
-    "host" : "virtserver.swaggerhub.com",
-    "basePath" : "/ErmannoBartoli99/AgrismartApi/1.0.0",
-    "tags" : [ {
-      "name" : "developers",
-      "description" : "Operations available to regular developers"
-    } ],
-    "schemes" : [ "https" ],
+    "host" : "localhost:8888",
+    "basePath" : "/",
+    "schemes" : [ "http" ],
     "paths" : {
-      "/api/users/{userId}" : {
+      "/api/users/{userId}/campi" : {
         "get" : {
           "summary" : "Ritorna la lista dei campi dato un utente",
           "parameters" : [ {
@@ -29,18 +25,25 @@
             "description" : "id dell'utente",
             "required" : true,
             "type" : "string"
+          },
+          {
+            "name" : "token",
+            "in": "query",
+            "description" : "token dell'utente",
+            "required" : true,
+            "type" : "string"
           } ],
           "responses" : {
             "200" : {
               "description" : "OK"
             },
             "401" : {
-              "description" : "UNATHORIZED"
+              "description" : "UNAUTHORIZED"
             }
           }
         }
       },
-      "/api/users/{userId}/campi/{campoId}" : {
+      "/api/users/{userId}/campi/{campoId}/sensors" : {
         "get" : {
           "summary" : "Ritorna la lista dei sensori dato un campo",
           "parameters" : [ {
@@ -55,18 +58,25 @@
             "description" : "è l'id del campo",
             "required" : true,
             "type" : "string"
+          },
+          {
+            "name" : "token",
+            "in": "query",
+            "description" : "token dell'utente",
+            "required" : true,
+            "type" : "string"
           } ],
           "responses" : {
             "200" : {
               "description" : "OK"
             },
             "401" : {
-              "description" : "UNATHORIZED"
+              "description" : "UNAUTHORIZED"
             }
           }
         }
       },
-      "/api/users/{userId}/campi/{campoId}/sensors/{sensorId}" : {
+      "/api/users/{userId}/campi/{campoId}/sensors/{sensorId}/rilevazioni" : {
         "get" : {
           "summary" : "Ritorna la lista le rilevazioni dato un sensore",
           "parameters" : [ {
@@ -87,13 +97,20 @@
             "description" : "id del sensore",
             "required" : true,
             "type" : "string"
+          },
+          {
+            "name" : "token",
+            "in": "query",
+            "description" : "token dell'utente",
+            "required" : true,
+            "type" : "string"
           } ],
           "responses" : {
             "200" : {
               "description" : "OK"
             },
             "401" : {
-              "description" : "UNATHORIZED"
+              "description" : "UNAUTHORIZED"
             }
           }
         }
@@ -107,6 +124,13 @@
             "description" : "nome della città",
             "required" : true,
             "type" : "string"
+          },
+          {
+            "name" : "token",
+            "in": "query",
+            "description" : "token dell'utente",
+            "required" : true,
+            "type" : "string"
           } ],
           "responses" : {
             "200" : {
@@ -118,9 +142,9 @@
           }
         }
       },
-      "/api/users/{userId}/sensors/{sensorId}" : {
+      "/api/users/{userId}/campi/{campoId}/sensors/{sensorId}/stato" : {
         "get" : {
-          "summary" : "Ritorna lo stato di un sensore dato un utente ed un sensore",
+          "summary" : "Ritorna lo stato di un sensore dato un utente, un campo ed un sensore",
           "parameters" : [ {
             "name" : "userId",
             "in" : "path",
@@ -133,6 +157,13 @@
             "description" : "id del sensore",
             "required" : true,
             "type" : "string"
+          },
+        {
+            "name" : "token",
+            "in": "query",
+            "description" : "token dell'utente",
+            "required" : true,
+            "type" : "string"
           } ],
           "responses" : {
             "200" : {
@@ -144,48 +175,6 @@
           }
         }
       }
-    },
-    "definitions" : {
-      "InventoryItem" : {
-        "type" : "object",
-        "required" : [ "id", "manufacturer", "name", "releaseDate" ],
-        "properties" : {
-          "id" : {
-            "type" : "string",
-            "format" : "uuid",
-            "example" : "d290f1ee-6c54-4b01-90e6-d701748f0851"
-          },
-          "name" : {
-            "type" : "string",
-            "example" : "Widget Adapter"
-          },
-          "releaseDate" : {
-            "type" : "string",
-            "format" : "date-time",
-            "example" : "2016-08-29T09:12:33.001Z"
-          },
-          "manufacturer" : {
-            "$ref" : "#/definitions/Manufacturer"
-          }
-        }
-      },
-      "Manufacturer" : {
-        "required" : [ "name" ],
-        "properties" : {
-          "name" : {
-            "type" : "string",
-            "example" : "ACME Corporation"
-          },
-          "homePage" : {
-            "type" : "string",
-            "format" : "url",
-            "example" : "https://www.acme-corp.com"
-          },
-          "phone" : {
-            "type" : "string",
-            "example" : "408-867-5309"
-          }
-        }
-      }
     }
   }
+  
