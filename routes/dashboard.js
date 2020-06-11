@@ -31,6 +31,8 @@ router.get('/campo*', (req, res) => {
 		db.getNomeSensoriFromCampoUtente(umail, campo).then((sensors) => {
 			var lat = infoCampo[1].replace(',', '.')
 			var lon = infoCampo[2].replace(',', '.')
+
+			console.log(sensors);
 	
 			var url = OWM_URL_1 + 'lat=' + lat
 			+ '&lon=' + lon + '&exclude=' + 'minutely,hourly,current' + OWM_URL_2

@@ -79,10 +79,9 @@ function handleSensorConnected(message) {
 }
 
 function handleSensorState(message, sensorID) {
-	db.getSensoreFromId(sensorID, (data) => {
-		console.log("Sensor %s state %s", sensorID, message);
-		console.log(data);
-	})
+	db.updateStatoSensore(sensorID, message.toString());
+	console.log("Sensor %s state %s", sensorID, message);
+
 	sensorState = message;
 }
 

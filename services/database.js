@@ -265,7 +265,7 @@ module.exports.getNomeSensoriFromCampoUtente = function (email, campo) {
 		var keys = Array();
 		db.collection("users").doc(email).collection("campi").doc(campo).collection("sensori").get().then(function(snapshot) {
 			snapshot.forEach(function(userSnapshot) {
-				keys.push([userSnapshot.id, userSnapshot.data().name]);	
+				keys.push([userSnapshot.id, userSnapshot.data().name, userSnapshot.data().stato]);	
 			});
 			resolve(keys);
 		}).catch((err) => reject(err));

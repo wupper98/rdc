@@ -89,7 +89,18 @@
 				<ul class="w3-ul w3-hoverable">
 					<% for(var i in sensori) { %>
 					<li class="w3-display-container">
-						<button class="w3-btn w3-hover-black" title="<%= sensori[i][0] %>" id="<%= sensori[i][1] %>" onclick="displaySensor('<%= sensori[i][1] %>')"><%= sensori[i][1] %></button>
+						<% if(sensori[i][2] == 'high') { %>
+							<button class="w3-btn w3-hover-green" title="<%= sensori[i][0] %>" id="<%= sensori[i][1] %>" onclick="displaySensor('<%= sensori[i][1] %>')"><%= sensori[i][1] %></button>
+						<% } %>
+						<% if(sensori[i][2] == 'mid') { %>
+							<button class="w3-btn w3-hover-yellow" title="<%= sensori[i][0] %>" id="<%= sensori[i][1] %>" onclick="displaySensor('<%= sensori[i][1] %>')"><%= sensori[i][1] %></button>
+						<% } %>
+						<% if(sensori[i][2] == 'low') { %>
+							<button class="w3-btn w3-hover-orange" title="<%= sensori[i][0] %>" id="<%= sensori[i][1] %>" onclick="displaySensor('<%= sensori[i][1] %>')"><%= sensori[i][1] %></button>
+						<% } %>
+						<% if(sensori[i][2] == 'critical') { %>
+							<button class="w3-btn w3-hover-red" title="<%= sensori[i][0] %>" id="<%= sensori[i][1] %>" onclick="displaySensor('<%= sensori[i][1] %>')"><%= sensori[i][1] %></button>
+						<% } %>
 						<span onclick="this.parentElement.style.display='none'" class="w3-button w3-display-right" title="Elimina sensore" >&times;</span>
 					</li>
 					<% } %>
@@ -109,6 +120,13 @@
 						<button type="submit" formmethod="post">Aggiungi</button>
 					</form>
 				</div>
+				<p>Stato carica del sensore:</p>
+				<ul>
+					<il class="w3-text-green">Ottimo</il> |
+					<il class="w3-text-yellow">Medio</il> |
+					<il class="w3-text-orange">Basso</il> |
+					<il class="w3-text-red">Critico</il>
+				</ul>
 			</div>
 			<div class="w3-container w3-half">
 				<div class="w3-black w3-center w3-allerta">
