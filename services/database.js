@@ -95,6 +95,7 @@ module.exports.createCampo = async function (email,nome, lat, lon) { //creo il c
 /*         Create Sensore         */
 /*************************************/
 // aggiunge alla lista di rilevazioni di un sensore
+// name è un alias userFriendly per l'id
 module.exports.createSensore = async function (email, campo, name) { //creo il sensore sia nella sua tabella, sia per il rispettivo utente
 	db.collection("users").doc(email).get().then( async (userInstance) => {
 
@@ -136,7 +137,7 @@ module.exports.createSensore = async function (email, campo, name) { //creo il s
 
 module.exports.createRilevazione = async function (email, campo, sensore, umidita, data) { //creo innaffiamento
 	db.collection("users").doc(email).collection("campi").doc(campo).collection("sensori").doc(sensore).collection("innaffiamenti").add({
-		umidita: umidita,
+		umidita: umidita.toString(),
 		data: data
 	}).then(function() {
 		if(TEST) console.log("Rilevamento del sensore "+ sensore +" aggiunto al database dell'utente: "+ email);

@@ -95,7 +95,7 @@ process.on('uncaughtException', handleAppExit.bind(null, {
 
 // Simulazione misurazione ogni 5 secondi
 
-temporal.loop(5000, function() {
+temporal.loop(10000, function() {
   moistureLVL = Math.random().toFixed(2);
   switch (Math.round(Math.random() * 4 - 1)) {
     case 0:

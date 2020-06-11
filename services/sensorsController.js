@@ -3,6 +3,24 @@ const mqtt = require('mqtt')
 const db = require("../services/database");
 const client = mqtt.connect('mqtt://broker.hivemq.com')
 
+function getTimeStamp() {
+	let ts = Date.now();
+
+	let date_ob = new Date(ts);
+	let date = date_ob.getDate();
+	let month = date_ob.getMonth() + 1;
+	let year = date_ob.getFullYear();
+	let hour = date_ob.getHours();
+	let minute = date_ob.getMinutes();
+	let seconds = date_ob.getSeconds();
+
+	console.log(year + "-" + month + "-" + date + "-" + hour + ":" +
+		minute + ":" + seconds);
+	var timestamp = year + "-" + month + "-" + date + "-" + hour + ":" +
+	minute + ":" + seconds;
+	return timestamp;
+}
+
 var sensorState = ''
 var moistureLVL = ''
 
@@ -17,13 +35,14 @@ client.on('message', (topic, message) => {
 			break;
 		default:
 			var sensorID = topic.toString().split("/")[0];
-			console.log("sensor: " + sensorID);
 			switch (topic.toString().split("/")[1]) {
 				case 'state':
 					handleSensorState(message, sensorID);
 					break;
 				case 'moisture':
 					handleSensorMoisture(message, sensorID);
+					break;
+				default:
 					break;
 			}
 	}
@@ -37,6 +56,7 @@ function handleSensorConnected(message) {
 	var sendUpdateQueueName = sensorID + "/sendUpdate";
 	var stateQueueName = sensorID + "/state";
 	var moistureQueueName = sensorID + "/moisture"
+
 	client.subscribe(sendUpdateQueueName, function (err, granted) {
 		if (err) console.log(err);
 		else {
@@ -67,8 +87,15 @@ function handleSensorState(message, sensorID) {
 }
 
 function handleSensorMoisture(message, sensorID) {
-	console.log("Sensor %s moisture level: %s", sensorID, message);
-	moistureLVL = message;
+	var toParse = sensorID.split("_");
+	var email = toParse[0];
+	var campo = toParse[1];
+	var senID = toParse[2];
+	db.createRilevazione(email, campo, sensorID,
+		message, getTimeStamp()).then( () => {
+			console.log("Sensor %s moisture level: %s", sensorID, message);
+			moistureLVL = message;
+		}).catch((err) => {console.log(err)});
 }
 
 // Chiede al sensore un update del suo stato
