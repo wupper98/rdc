@@ -120,8 +120,25 @@ router.get('/getRilevazioni/*',  (req, res) => {
 	// magari in un formato sarebbero carine
 
 	db.getRilevazioniFromSensorID(sensorID).then(async (rilevazioni) => {
-		res.send(rilevazioni);
-		console.log(rilevazioni[0][1]);
+		
+		new Promise( function(resolve, reject){
+			var values = {
+				"data":[]
+			};
+			for( i = 0; i < rilevazioni.length; i++ ){
+				values.data.push({
+					//x: new Date(rilevazioni[i][0]),
+					x: parseInt(i),
+					y: parseFloat(rilevazioni[i][1])
+				})
+			}
+			console.log(values);
+			resolve(values);
+		}).then( (values) => {
+			res.send(values);
+		}).catch( (err) => {
+			console.log(err);
+		});	
 	}).catch((err) => {
 		console.log(err)
 	});
