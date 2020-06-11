@@ -92,15 +92,9 @@ module.exports.createCampo =  function (email,nome, lat, lon) { //creo il campo 
 /*         Create Sensore         */
 /*************************************/
 // aggiunge alla lista di rilevazioni di un sensore
-<<<<<<< HEAD
-// name è un alias userFriendly per l'id
-module.exports.createSensore = async function (email, campo, name) { //creo il sensore sia nella sua tabella, sia per il rispettivo utente
-	db.collection("users").doc(email).get().then( async (userInstance) => {
-=======
 module.exports.createSensore = function (email, campo, name) { //creo il sensore sia nella sua tabella, sia per il rispettivo utente
 	return new Promise(function(resolve,reject){ 
 		db.collection("users").doc(email).get().then( (userInstance) => {
->>>>>>> 2e2f2a99b96e809815f3a08f6156b470ddc8e3e4
 
 		var sid = userInstance.data().sensoricounter + 1;
 		var id = email + "_" + campo + "_" + sid;

@@ -121,7 +121,7 @@ router.get('/getRilevazioni/*',  (req, res) => {
 
 	db.getRilevazioniFromSensorID(sensorID).then(async (rilevazioni) => {
 		res.send(rilevazioni);
-		console.log(rilevazioni);
+		console.log(rilevazioni[0][1]);
 	}).catch((err) => {
 		console.log(err)
 	});
