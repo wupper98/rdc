@@ -150,7 +150,7 @@ module.exports.updateStatoSensore = function (sensore, stato) {
 			if(TEST) console.log('[+] No such sensor!');
 		} else {
 			if(TEST) console.log('Document data: ', x.data());
-			db.collection("users").doc(x.email).collection("campi").doc(x.campo).collection("sensori").doc(sensore).update({
+			db.collection("users").doc(x.data().email).collection("campi").doc(x.data().campo).collection("sensori").doc(sensore).update({
 				stato: stato
 			})
 		}
