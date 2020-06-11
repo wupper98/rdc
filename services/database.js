@@ -113,7 +113,7 @@ module.exports.createSensore = function (email, campo, name) { //creo il sensore
 					campo: campo,
 				}).then(function() {
 					if(TEST) console.log("Sensore "+ id +" aggiunto al database dei sensori con riferimento a: "+ email);
-					resolve();
+					resolve(id);
 				}).catch(function() {
 					if(TEST) console.log("Sensore "+ id +" non aggiunto al database dell'utente: "+ email);
 				});

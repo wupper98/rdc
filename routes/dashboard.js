@@ -1,5 +1,6 @@
 const db = require("../services/database")
 const path = require('path')
+const sensorSim = require("../services/sensorSim");
 const express = require('express')
 const request = require('request')
 var async = require("async");
@@ -108,23 +109,12 @@ router.post('/addSensore', (req, res) => {
 	sensorName = req.body.sensorName;
 	campoID = req.body.campoID;
 
-	db.createSensore(umail, campoID, sensorName ).then ((x) => {
+	db.createSensore(umail, campoID, sensorName ).then ((id) => {
+		sensorSim.initSensore(id); // Avvia la simulazione del sensore appena aggiunto dall'utente (test più facile)
 		res.redirect("/dashboard/"+campoID);
 	});
 
-	var sensor_name = umail + "_" + campoID + "_" + 5;
-
-	const {exec} = require('child_process');
-	exec("node ../services/sensorSim.js " + sensor_name , (err, stdout, stderr) => {
-		console.log("[+] Starting simulation for: " + sensor_name);
-		if( err ){
-			console.log(err);
-		}
-		else{
-			console.log(`stdout: ${stdout}`);
-   			console.log(`stderr: ${stderr}`);
-		}
-	});
+	
 });
 
 router.get('/getRilevazioni/*',  (req, res) => {
