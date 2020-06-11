@@ -111,6 +111,20 @@ router.post('/addSensore', (req, res) => {
 	db.createSensore(umail, campoID, sensorName ).then ((x) => {
 		res.redirect("/dashboard/"+campoID);
 	});
+
+	var sensor_name = umail + "_" + campoID + "_" + 5;
+
+	const {exec} = require('child_process');
+	exec("node ../services/sensorSim.js " + sensor_name , (err, stdout, stderr) => {
+		console.log("[+] Starting simulation for: " + sensor_name);
+		if( err ){
+			console.log(err);
+		}
+		else{
+			console.log(`stdout: ${stdout}`);
+   			console.log(`stderr: ${stderr}`);
+		}
+	});
 });
 
 router.get('/getRilevazioni/*',  (req, res) => {
@@ -126,7 +140,7 @@ router.get('/getRilevazioni/*',  (req, res) => {
 				"data":[]
 			};
 			console.log(rilevazioni);
-			
+
 			for( i = 0; i < rilevazioni.length; i++ ){
 				values.data.push({
 					//x: new Date(rilevazioni[i][0]),
