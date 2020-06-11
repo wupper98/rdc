@@ -41,6 +41,7 @@
     "passport-google-oauth20": "^2.0.0",
     "promise": "^8.1.0",
     "request": "^2.88.2",
+    "swagger-ui-express": "^4.1.4",
     "temporal": "^0.7.1"
   }
 }

@@ -1,0 +1,191 @@
+{
+    "swagger" : "2.0",
+    "info" : {
+      "description" : "This is a simple API",
+      "version" : "1.0.0",
+      "title" : "Simple Inventory API",
+      "contact" : {
+        "email" : "you@your-company.com"
+      },
+      "license" : {
+        "name" : "Apache 2.0",
+        "url" : "http://www.apache.org/licenses/LICENSE-2.0.html"
+      }
+    },
+    "host" : "virtserver.swaggerhub.com",
+    "basePath" : "/ErmannoBartoli99/AgrismartApi/1.0.0",
+    "tags" : [ {
+      "name" : "developers",
+      "description" : "Operations available to regular developers"
+    } ],
+    "schemes" : [ "https" ],
+    "paths" : {
+      "/api/users/{userId}" : {
+        "get" : {
+          "summary" : "Ritorna la lista dei campi dato un utente",
+          "parameters" : [ {
+            "name" : "userId",
+            "in" : "path",
+            "description" : "id dell'utente",
+            "required" : true,
+            "type" : "string"
+          } ],
+          "responses" : {
+            "200" : {
+              "description" : "OK"
+            },
+            "401" : {
+              "description" : "UNATHORIZED"
+            }
+          }
+        }
+      },
+      "/api/users/{userId}/campi/{campoId}" : {
+        "get" : {
+          "summary" : "Ritorna la lista dei sensori dato un campo",
+          "parameters" : [ {
+            "name" : "userId",
+            "in" : "path",
+            "description" : "id dell'utente",
+            "required" : true,
+            "type" : "string"
+          }, {
+            "name" : "campoId",
+            "in" : "path",
+            "description" : "è l'id del campo",
+            "required" : true,
+            "type" : "string"
+          } ],
+          "responses" : {
+            "200" : {
+              "description" : "OK"
+            },
+            "401" : {
+              "description" : "UNATHORIZED"
+            }
+          }
+        }
+      },
+      "/api/users/{userId}/campi/{campoId}/sensors/{sensorId}" : {
+        "get" : {
+          "summary" : "Ritorna la lista le rilevazioni dato un sensore",
+          "parameters" : [ {
+            "name" : "userId",
+            "in" : "path",
+            "description" : "id dell'utente",
+            "required" : true,
+            "type" : "string"
+          }, {
+            "name" : "campoId",
+            "in" : "path",
+            "description" : "è l'id del campo",
+            "required" : true,
+            "type" : "string"
+          }, {
+            "name" : "sensorId",
+            "in" : "path",
+            "description" : "id del sensore",
+            "required" : true,
+            "type" : "string"
+          } ],
+          "responses" : {
+            "200" : {
+              "description" : "OK"
+            },
+            "401" : {
+              "description" : "UNATHORIZED"
+            }
+          }
+        }
+      },
+      "/api/meteo/{città}" : {
+        "get" : {
+          "summary" : "Ritorna il meteo data una città",
+          "parameters" : [ {
+            "name" : "città",
+            "in" : "path",
+            "description" : "nome della città",
+            "required" : true,
+            "type" : "string"
+          } ],
+          "responses" : {
+            "200" : {
+              "description" : "OK"
+            },
+            "401" : {
+              "description" : "UNAUTHORIZED"
+            }
+          }
+        }
+      },
+      "/api/users/{userId}/sensors/{sensorId}" : {
+        "get" : {
+          "summary" : "Ritorna lo stato di un sensore dato un utente ed un sensore",
+          "parameters" : [ {
+            "name" : "userId",
+            "in" : "path",
+            "description" : "id dell'utente",
+            "required" : true,
+            "type" : "string"
+          }, {
+            "name" : "sensorId",
+            "in" : "path",
+            "description" : "id del sensore",
+            "required" : true,
+            "type" : "string"
+          } ],
+          "responses" : {
+            "200" : {
+              "description" : "OK"
+            },
+            "401" : {
+              "description" : "UNAUTHORIZED"
+            }
+          }
+        }
+      }
+    },
+    "definitions" : {
+      "InventoryItem" : {
+        "type" : "object",
+        "required" : [ "id", "manufacturer", "name", "releaseDate" ],
+        "properties" : {
+          "id" : {
+            "type" : "string",
+            "format" : "uuid",
+            "example" : "d290f1ee-6c54-4b01-90e6-d701748f0851"
+          },
+          "name" : {
+            "type" : "string",
+            "example" : "Widget Adapter"
+          },
+          "releaseDate" : {
+            "type" : "string",
+            "format" : "date-time",
+            "example" : "2016-08-29T09:12:33.001Z"
+          },
+          "manufacturer" : {
+            "$ref" : "#/definitions/Manufacturer"
+          }
+        }
+      },
+      "Manufacturer" : {
+        "required" : [ "name" ],
+        "properties" : {
+          "name" : {
+            "type" : "string",
+            "example" : "ACME Corporation"
+          },
+          "homePage" : {
+            "type" : "string",
+            "format" : "url",
+            "example" : "https://www.acme-corp.com"
+          },
+          "phone" : {
+            "type" : "string",
+            "example" : "408-867-5309"
+          }
+        }
+      }
+    }
+  }

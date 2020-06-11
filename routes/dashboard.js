@@ -2,6 +2,7 @@ const db = require("../services/database")
 const path = require('path')
 const express = require('express')
 const request = require('request')
+var async = require("async");
 const passport = require('passport')
 const bodyparser = require('body-parser')
 const session = require('express-session')
@@ -70,7 +71,7 @@ router.get('/campo*', (req, res) => {
 	});
 });
 
-function addUserWithProm(umail){
+/*function addUserWithProm(umail){
 	return new Promise( async function(resolve, reject){
 		await db.createUser(umail);
 		resolve()
@@ -82,29 +83,49 @@ function addCampoWithProm(umail, nome, lat, lon){
 		await db.createCampo(umail, nome, lat, lon);
 		resolve()
 	});
-}
+}*/
 
 router.post('/', async (req, res) => {
 	var umail = req.user.emails[0].value;
 	var nome = req.body.nome;
 	var latitude = req.body.latitude;
 	var longitude = req.body.longitude;
-	addUserWithProm(umail).then(()=>{
-		addCampoWithProm(umail, nome, latitude, longitude).then(()=>{
-			// una volta aggiunto un campo eseguo la redirect sulla home
-			setTimeout( function(){
-				res.redirect("/");
-			},1000);
-		})
-	})
+
+	db.createUser(umail).then(function() {
+		console.log("Utente aggiunto al database: "+ email);
+	}).catch((err) => {
+		console.log("Utente già registrato: "+ email);
+	}).finally((err) => {
+		db.createCampo(umail, nome, latitude, longitude).then((resprom) => {
+			res.redirect("/");
+		})	
+	});
+
 });
 
-router.post('/addSensore', async (req, res) => {
+router.post('/addSensore', (req, res) => {
 	var umail = req.user.emails[0].value;
 	sensorName = req.body.sensorName;
 	campoID = req.body.campoID;
-	await db.createSensore(umail, campoID, sensorName );
-	res.redirect("/dashboard/"+campoID);
+
+	db.createSensore(umail, campoID, sensorName ).then ((x) => {
+		res.redirect("/dashboard/"+campoID);
+	});
+});
+
+router.get('/getRilevazioni/*',  (req, res) => {
+	var sensorID = req.originalUrl.split('/')[3];
+
+	// non riesco a prendere le rilevazioni
+	// magari in un formato sarebbero carine
+
+	db.getRilevazioniFromSensorID(sensorID).then(async (rilevazioni) => {
+		res.send(rilevazioni);
+		console.log(rilevazioni);
+	}).catch((err) => {
+		console.log(err)
+	});
+
 });
 
 module.exports = router;
