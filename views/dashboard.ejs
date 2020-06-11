@@ -101,7 +101,11 @@
 						<% if(sensori[i][2] == 'critical') { %>
 							<button class="w3-btn w3-hover-red" title="<%= sensori[i][0] %>" id="<%= sensori[i][1] %>" onclick="displaySensor('<%= sensori[i][1] %>')"><%= sensori[i][1] %></button>
 						<% } %>
-						<span onclick="this.parentElement.style.display='none'" class="w3-button w3-display-right" title="Elimina sensore" >&times;</span>
+						<span class="w3-button w3-display-right" title="Elimina sensore" >
+							<a href="http://localhost:<%= port %>/dashboard/delete/sensore/<%= sensori[i][0] %>">
+								&times;
+							</a>
+						</span>
 					</li>
 					<% } %>
 				</ul>

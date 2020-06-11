@@ -21,8 +21,8 @@
             font-family: "Allerta Stencil", Sans-serif;
         }
 
-        a:link,
-        a:visited {
+        a:link.log,
+        a:visited.log {
             background-color: #f44336;
             color: white;
             padding: 12px 25px;
@@ -31,8 +31,8 @@
             display: inline-block;
         }
 
-        a:hover,
-        a:active {
+        a:hover.log,
+        a:active.log {
             background-color: red;
         }
     </style>
@@ -49,10 +49,14 @@
         <ul class="w3-ul w3-hoverable">
             <% for(var i in campi) { %>
             <li class="w3-display-container">
-                <a class="w3-green"
-                    href="http://localhost:<%= port%>/dashboard/<%= campi[i][0] %>"><%= campi[i][1]%></a>
-                <span onclick="this.parentElement.style.display='none'" class="w3-button w3-display-right"
-                    title="Elimina campo">&times;</span>
+                <a class="log w3-green"
+                    href="http://localhost:<%= port%>/dashboard/<%= campi[i][0] %>"><%= campi[i][1]%>
+                </a>
+                <span class="w3-button w3-display-right" title="Elimina campo">
+                    <a href="http://localhost:<%= port %>/dashboard/delete/campo/<%= campi[i][0] %>">
+                        &times;
+                    </a>
+                </span>
             </li>
             <% } %>
         </ul>
@@ -62,11 +66,11 @@
             title="aggiungi campo">+</button>
         <br>
         <div class="w3-center">
-            <a href="/logout">Logout</a>
+            <a class="log" href="/logout">Logout</a>
         </div>
         <% } else{ %>
         <div class="w3-center">
-            <a href="/auth/google/callback">Login</a>
+            <a class="log" href="/auth/google/callback">Login</a>
         </div>
         <% } %>
     </div>

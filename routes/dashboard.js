@@ -151,4 +151,24 @@ router.get('/getRilevazioni/*',  (req, res) => {
 
 });
 
+router.get('/delete/sensore/*', (req, res) => {
+	var sensore = req.originalUrl.split('/')[4];
+	var params = sensore.split('_');
+	var umail = params[0];
+	var campoID = params[1];
+
+	db.deleteSensore(umail, campoID, sensore).then(()=>{
+		res.redirect('/dashboard/' + campoID);
+	});
+});
+
+router.get('/delete/campo/*', (req, res) => {
+	var campoID = req.originalUrl.split('/')[4];
+	var umail = req.user.emails[0].value;
+
+	db.deleteCampo(umail, campoID).then(()=>{
+		res.redirect('/');
+	});
+});
+
 module.exports = router;

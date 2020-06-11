@@ -78,10 +78,6 @@ function handleAppExit (options, err) {
     console.log(err.stack);
   }
 
-  if (options.cleanup) {
-    client.publish(connectQueueName, sensorID);
-  }
-
   if (options.exit) {
     process.exit();
   }
