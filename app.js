@@ -61,7 +61,7 @@ app.get('/auth/google/callback', passport.authenticate('google', { failureRedire
 		}
 		else{
 			// utente nuovo. Gli faccio registrare un nuovo campo
-			res.redirect('/coordConfig');
+			res.redirect('/coordConfig');		
 		}
 	}).catch((err) => {
 		if(TEST) console.log(err);

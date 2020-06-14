@@ -99,7 +99,11 @@ router.post('/', async (req, res) => {
 	}
 	else{
 		db.createUser(umail).then(function() {
-			console.log("Utente aggiunto al database: "+ email);
+			console.log("Utente aggiunto al database: "+ umail);
+			db.createAPIToken(umail).then((x) => {
+				console.log("API Token creato!" + x.id); 
+				db.setUserToken(umail, x.id);		
+			}).catch((x) => { console.log("Problema nella creazione dell'API Token.")});
 		}).catch((err) => {
 			console.log("Utente già registrato: "+ umail);
 		}).finally((err) => {
@@ -177,6 +181,11 @@ router.get('/delete/campo/*', (req, res) => {
 	db.deleteCampo(umail, campoID).then(()=>{
 		res.redirect('/');
 	});
+});
+
+router.get('/refreshAPIToken', (req, res) => {
+	db.refreshAPIToken(req.old, req.user.emails[0].value);
+	res.redirect('/');
 });
 
 module.exports = router;

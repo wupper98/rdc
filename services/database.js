@@ -404,3 +404,30 @@ module.exports.deleteCampo= function(utenteId,campoId) {
 	return db.collection("users").doc(utenteId).collection("campi").doc(campoId).delete();
 }
 
+/****************************************/
+/*         DB - createAPIToken		    */
+/****************************************/
+module.exports.createAPIToken = function (email) { //creo lo user token
+	let instance = db.collection("tokens");
+	return instance.add({user: email});
+}
+
+
+/****************************************/
+/*         DB - refreshAPIToken		    */
+/****************************************/
+module.exports.refreshAPIToken = function (email, old) { //creo lo user token e cancello quello vecchio
+	db.collection("tokens").doc(old).delete().then((x) => {
+		db.collection("tokens").add({user: email}).then((y) => {
+			console.log("Token Refreshato");
+			module.exports.setUserToken(email, y.id);
+		}).catch((y) => console.log("Token non refreshato correttamente"));
+	}).catch((x) => console.log("Problemi nella rimozione del token."));
+}
+
+/****************************************/
+/*         DB - setUserToken		    */
+/****************************************/
+module.exports.setUserToken = function (email, id) { //metto lo user token nella tabella utente
+	db.collection("users").doc(email).set({token: id}).then((x) => console.log("Token settato all'utente")).catch((x)=> console.log("Token non settato all'utente"));
+}
