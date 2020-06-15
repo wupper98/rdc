@@ -429,7 +429,7 @@ module.exports.refreshAPIToken = function (email, old) { //creo lo user token e 
 /*         DB - setUserToken		    */
 /****************************************/
 module.exports.setUserToken = function (email, id) { //metto lo user token nella tabella utente
-	db.collection("users").doc(email).set({token: id}).then((x) => console.log("Token settato all'utente")).catch((x)=> console.log("Token non settato all'utente"));
+	db.collection("users").doc(email).update({token: id});
 }
 
 /****************************************/

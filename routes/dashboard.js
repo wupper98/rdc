@@ -102,15 +102,18 @@ router.post('/', async (req, res) => {
 		res.send("[ERR] Impossibile creare il campo. Inserisci tutti i valori e riprova");
 	}
 	else{
-		db.createUser(umail).then(function() {
+		db.createUser(umail).then(function(x) {
 			console.log("Utente aggiunto al database: "+ umail);
-			db.createAPIToken(umail).then((x) => {
-				console.log("API Token creato!" + x.id); 
-				db.setUserToken(umail, x.id);		
-			}).catch((x) => { console.log("Problema nella creazione dell'API Token.")});
+			return db.createAPIToken(umail);
 		}).catch((err) => {
 			console.log("Utente già registrato: "+ umail);
-		}).finally((err) => {
+		}).then((x) => {
+			console.log("API Token creato!" + x.id); 
+			return db.setUserToken(umail, x.id);		
+		}).catch((x) => { console.log("Problema nella creazione dell'API Token.")})
+		.then((x) => console.log("Token settato all'utente"))
+		.catch((x)=> console.log("Token non settato all'utente"))
+		.finally((err) => {
 			db.createCampo(umail, nome, latitude, longitude).then((resprom) => {
 				res.redirect("/");
 			})	
