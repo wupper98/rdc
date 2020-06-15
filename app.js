@@ -1,13 +1,14 @@
 #!/usr/bin/env node
-const db = require("./services/database")
+require('dotenv').config()
 const path = require('path')
+const db = require("./services/database")
 const express = require('express')
 const request = require('request')
 const passport = require('passport')
 const bodyparser = require('body-parser')
 const session = require('express-session')
+const manageTokenOauth = require("./services/localTokenOauth");
 const GoogleStrategy = require('passport-google-oauth20').Strategy
-require('dotenv').config()
 
 const app = express();
 const PORT = process.env.PORT;
@@ -46,6 +47,10 @@ passport.use(new GoogleStrategy( {
 		scope: ['email', 'https://www.googleapis.com/auth/calendar'],
 	}, (accessToken, refreshToken, profile, cb) => {
 		if(TEST) console.log('Our user authenticated with Google, and Google sent us back this profile info identifying the authenticated user:', profile);
+		
+		// Salvo il token dell'utente su un file nominato come la sua email
+		// lo stesso file verrà distrutto al momento del logout
+		manageTokenOauth.createToken(profile.emails[0].value, accessToken);
 
 		return cb(null, profile);
 }));
@@ -69,6 +74,7 @@ app.get('/auth/google/callback', passport.authenticate('google', { failureRedire
 });
 
 app.get('/logout', function(req, res) {
+	manageTokenOauth.deleteToken(req.user.emails[0].value);
 	req.logout();
 	res.redirect('/');
 });
@@ -96,10 +102,6 @@ app.use( function accessProtectionMiddleware(req, res, next) {
 	}
 })
 
-app.get("/prova", (req, res) => {
-	console.log(req.user);
-})
-
 // Controller per le risorse di configurazione coordinate
 var coordConfig = require('./routes/coordConfig');
 app.use('/coordConfig', coordConfig);
@@ -108,6 +110,14 @@ app.use('/coordConfig', coordConfig);
 var dashboard = require('./routes/dashboard');
 app.use('/dashboard', dashboard);
 
+var calendar = require("./services/calendar");
+app.get('/prova', (req, res) => {
+	var token = manageTokenOauth.readToken(req.user.emails[0].value);
+	var data = new Date().toISOString().toString();
+	var moisture = 1.00
+	calendar.controllaRilevazione(token, req, res, data, moisture, 1);
+	res.send(token);
+})
 
 // Avvio del server
 var server = app.listen(PORT, function () {
