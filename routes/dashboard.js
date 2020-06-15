@@ -43,25 +43,28 @@ router.get('/campo*', (req, res) => {
 					var main = info.temp;
 					var weather = info.weather[0].description;
 
-					console.log(sensors);
+					//console.log(sensors);
 	
-					res.render('dashboard.ejs', {
-						utente: umail,
-						lat: lat,
-						lon: lon,
-						weather: weather,
-						temp: KelvinToCelcius(main.day),
-						feels_like: KelvinToCelcius(info.feels_like.day),
-						min: KelvinToCelcius(main.min),
-						max: KelvinToCelcius(main.max),
-						pressure: info.pressure,
-						humidity: info.humidity,
-						port: process.env.PORT,
-						nomecampo: infoCampo[0],
-						idcampo: campo,
-						sensori: sensors,
-						token: "prova"
+					db.getUserData(req.user.emails[0].value).then((x) => {
+						res.render('dashboard.ejs', {
+							utente: umail,
+							lat: lat,
+							lon: lon,
+							weather: weather,
+							temp: KelvinToCelcius(main.day),
+							feels_like: KelvinToCelcius(info.feels_like.day),
+							min: KelvinToCelcius(main.min),
+							max: KelvinToCelcius(main.max),
+							pressure: info.pressure,
+							humidity: info.humidity,
+							port: process.env.PORT,
+							nomecampo: infoCampo[0],
+							idcampo: campo,
+							sensori: sensors,
+							token: x.data().token
+						});
 					});
+					
 				}
 				else {
 					res.render("404notfound.ejs", {port: process.env.PORT});
@@ -99,15 +102,18 @@ router.post('/', async (req, res) => {
 		res.send("[ERR] Impossibile creare il campo. Inserisci tutti i valori e riprova");
 	}
 	else{
-		db.createUser(umail).then(function() {
+		db.createUser(umail).then(function(x) {
 			console.log("Utente aggiunto al database: "+ umail);
-			db.createAPIToken(umail).then((x) => {
-				console.log("API Token creato!" + x.id); 
-				db.setUserToken(umail, x.id);		
-			}).catch((x) => { console.log("Problema nella creazione dell'API Token.")});
+			return db.createAPIToken(umail);
 		}).catch((err) => {
 			console.log("Utente già registrato: "+ umail);
-		}).finally((err) => {
+		}).then((x) => {
+			console.log("API Token creato!" + x.id); 
+			return db.setUserToken(umail, x.id);		
+		}).catch((x) => { console.log("Problema nella creazione dell'API Token.")})
+		.then((x) => console.log("Token settato all'utente"))
+		.catch((x)=> console.log("Token non settato all'utente"))
+		.finally((err) => {
 			db.createCampo(umail, nome, latitude, longitude).then((resprom) => {
 				res.redirect("/");
 			})	
