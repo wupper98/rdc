@@ -25,6 +25,10 @@
 		.w3-allerta {
 			font-family: "Allerta Stencil", Sans-serif;
 		}
+
+		a{
+			text-decoration: none;
+		}
 	</style>
 </head>
 
@@ -33,7 +37,12 @@
 		<div class="w3-black w3-center w3-allerta">
 			<h3>Benvenuto <%= utente %></h3>
 			<a href="http://localhost:<%= port %>/">HOME</a> -
+			<button id="tokBtn" class="w3-button w3-black" onclick="showToken()">Mostra token api</button> - 
 			<a href="http://localhost:<%= port %>/logout">Logout</a>
+			<input id="TokenInput" style="display: none;" value="<%= token %>">
+		</div>
+		<div id="tokDiv" class="w3-container w3-theme-l2 w3-center" style="visibility: hidden;">
+			<h4><%= token %></h4>
 		</div>
 		<br>
 		<div class="w3-row">
@@ -214,6 +223,22 @@
 					renderChart(data)
 				}
 			);
+		}
+	</script>
+
+	<!-- GetToken -->
+	<script>
+		function showToken(){
+			var tokDiv = document.getElementById("tokDiv");
+			var tokBtn = document.getElementById("tokBtn");
+			if( tokDiv.style.visibility == "visible" ){
+				tokDiv.style.visibility = "hidden";
+				tokBtn.innerHTML = "Mostra token API";
+			}
+			else{
+				tokDiv.style.visibility = "visible"
+				tokBtn.innerHTML = "Nascondi token API";
+			}
 		}
 	</script>
 </body>

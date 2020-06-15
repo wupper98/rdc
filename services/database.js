@@ -438,3 +438,5 @@ module.exports.setUserToken = function (email, id) { //metto lo user token nella
 module.exports.getUserData = function (email) { //getto lo user token nella tabella utente
 	return db.collection("users").doc(email).get();
 }
+
+
