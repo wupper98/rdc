@@ -60,7 +60,7 @@ router.get('/campo*', (req, res) => {
 						nomecampo: infoCampo[0],
 						idcampo: campo,
 						sensori: sensors,
-						token: "prova"
+						token: "IlTuoToken"
 					});
 				}
 				else {
