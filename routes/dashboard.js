@@ -43,25 +43,28 @@ router.get('/campo*', (req, res) => {
 					var main = info.temp;
 					var weather = info.weather[0].description;
 
-					console.log(sensors);
+					//console.log(sensors);
 	
-					res.render('dashboard.ejs', {
-						utente: umail,
-						lat: lat,
-						lon: lon,
-						weather: weather,
-						temp: KelvinToCelcius(main.day),
-						feels_like: KelvinToCelcius(info.feels_like.day),
-						min: KelvinToCelcius(main.min),
-						max: KelvinToCelcius(main.max),
-						pressure: info.pressure,
-						humidity: info.humidity,
-						port: process.env.PORT,
-						nomecampo: infoCampo[0],
-						idcampo: campo,
-						sensori: sensors,
-						token: "IlTuoToken"
+					db.getUserData(req.user.emails[0].value).then((x) => {
+						res.render('dashboard.ejs', {
+							utente: umail,
+							lat: lat,
+							lon: lon,
+							weather: weather,
+							temp: KelvinToCelcius(main.day),
+							feels_like: KelvinToCelcius(info.feels_like.day),
+							min: KelvinToCelcius(main.min),
+							max: KelvinToCelcius(main.max),
+							pressure: info.pressure,
+							humidity: info.humidity,
+							port: process.env.PORT,
+							nomecampo: infoCampo[0],
+							idcampo: campo,
+							sensori: sensors,
+							token: x.data().token
+						});
 					});
+					
 				}
 				else {
 					res.render("404notfound.ejs", {port: process.env.PORT});
