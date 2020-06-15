@@ -131,7 +131,9 @@ router.post('/addSensore', (req, res) => {
 	}
 	else{
 		db.createSensore(umail, campoID, sensorName ).then ((id) => {
+			console.log("sono qui");
 			sensorSim.initSensore(id); // Avvia la simulazione del sensore appena aggiunto dall'utente (test più facile)
+			console.log("sono qui1");
 			res.redirect("/dashboard/"+campoID);
 		});
 	}

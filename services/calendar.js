@@ -1,6 +1,9 @@
 const request = require("request");
 const HTTP_OK = 200;
 
+var baseDir = require('app-root-path');
+console.log(baseDir);
+
 module.exports.controllaRilevazione = async function (accessToken, req, res, data, moisture, campoId) {
 
     var ll = new Array();
@@ -40,8 +43,8 @@ module.exports.aggiungiRilevazione = function aggiungiRilevazione(accessToken, r
     };
 
     var body = {
-        'summary': "[Agrismart]" + campoId + ": " + moisture,
-        'description' : campoId + ": " + moisture,
+        'summary': "[Agrismart]" + campoId + ": " + moisture + "%",
+        'description' : campoId + ": " + moisture + "%",
         'start': {
             'dateTime': data,
         },

@@ -110,15 +110,6 @@ app.use('/coordConfig', coordConfig);
 var dashboard = require('./routes/dashboard');
 app.use('/dashboard', dashboard);
 
-var calendar = require("./services/calendar");
-app.get('/prova', (req, res) => {
-	var token = manageTokenOauth.readToken(req.user.emails[0].value);
-	var data = new Date().toISOString().toString();
-	var moisture = 1.00
-	calendar.controllaRilevazione(token, req, res, data, moisture, 1);
-	res.send(token);
-})
-
 // Avvio del server
 var server = app.listen(PORT, function () {
 	if(TEST) console.log("[!] Output will be verbose, test mode on!");

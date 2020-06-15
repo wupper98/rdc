@@ -1,14 +1,13 @@
 #!/usr/bin/env node
-const mqtt = require('mqtt')
+const mqtt = require('mqtt');
 const db = require("../services/database");
-const client = mqtt.connect('mqtt://broker.hivemq.com')
+const calendar = require("../services/calendar");
+const client = mqtt.connect('mqtt://broker.hivemq.com');
+const manageTokenOauth = require("../services/localTokenOauth");
 
 function getTimeStamp() {
 	return Date.now();
 }
-
-var sensorState = ''
-var moistureLVL = ''
 
 client.on('connect', () => {
 	client.subscribe('sensor/connected');
@@ -67,18 +66,26 @@ function handleSensorConnected(message) {
 function handleSensorState(message, sensorID) {
 	db.updateStatoSensore(sensorID, message.toString());
 	console.log("Sensor %s state %s", sensorID, message);
-
-	sensorState = message;
 }
 
 function handleSensorMoisture(message, sensorID) {
 	var toParse = sensorID.split("_");
 	var email = toParse[0];
 	var campo = toParse[1];
-	var senID = toParse[2];
-	db.createRilevazione(email, campo, sensorID, message.toString(), getTimeStamp())
+	db.createRilevazione(email, campo, sensorID, message.toString(), getTimeStamp());
 	console.log("Sensor %s moisture level: %s", sensorID, message);
-	// moistureLVL = message;
+	// creo evento Google Calendar
+	db.getNomeCampiFromUtente(email).then((campi) => {
+		for( i = 0; i < campi.length; i++ ){
+			if( campi[i][0] == campo ){
+				var token = manageTokenOauth.readToken(email);
+				var data = new Date().toISOString().toString();
+				var moisture = message;
+				calendar.aggiungiRilevazione(token, null, null, data, moisture, campi[i][1]);
+				console.log("Creato evento su calendar");
+			}
+		}
+	})
 }
 
 // Chiede al sensore un update del suo stato
