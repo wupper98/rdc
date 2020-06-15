@@ -59,7 +59,8 @@ router.get('/campo*', (req, res) => {
 						port: process.env.PORT,
 						nomecampo: infoCampo[0],
 						idcampo: campo,
-						sensori: sensors
+						sensori: sensors,
+						token: "prova"
 					});
 				}
 				else {

@@ -43,7 +43,7 @@ passport.use(new GoogleStrategy( {
 		clientID: process.env.GOOGLE_OAUTH_TEST_APP_CLIENT_ID,
 		clientSecret: process.env.GOOGLE_OAUTH_TEST_APP_CLIENT_SECRET,
 		callbackURL: 'http://localhost:' + PORT + '/auth/google/callback',
-		scope: ['email'],
+		scope: ['email', 'https://www.googleapis.com/auth/calendar'],
 	}, (accessToken, refreshToken, profile, cb) => {
 		if(TEST) console.log('Our user authenticated with Google, and Google sent us back this profile info identifying the authenticated user:', profile);
 
@@ -94,6 +94,10 @@ app.use( function accessProtectionMiddleware(req, res, next) {
 	} else {
 		res.status(403).render('403forbidden.ejs', {port: PORT});
 	}
+})
+
+app.get("/prova", (req, res) => {
+	console.log(req.user);
 })
 
 // Controller per le risorse di configurazione coordinate
