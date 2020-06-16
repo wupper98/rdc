@@ -10,8 +10,6 @@ var stateQueueName;
 var moistureQueueName;
 var connectQueueName;
 
-
-
 // Sensor publishes on sensorID/state; sensorID/moisture; sensor/connected
 // Sensor subscribes to sensorID/sendUpdate
 // Le code sensorID sono esclusive per il sensore con id sensorID
