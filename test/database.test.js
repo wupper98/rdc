@@ -24,14 +24,14 @@ test('Verifica creazione sensore', (done) => {
 });
 
 test('Eliminazione sensore', () => {
-  return db.deleteSensore("prova@gmail.com", "campo1", "prova@gmail.com_campo1_1");
+  return db.deleteSensore("prova@gmail.com", "campo1", "prova@gmail.com_campo1_1").then(() => console.log("Sensore eliminato"));
 });
 
 test('Eliminazione campo', () => {
-  return db.deleteCampo("prova@gmail.com", "campo1");
+  return db.deleteCampo("prova@gmail.com", "campo1").then(() => console.log("Campo eliminato"));
 });
 
 test('Eliminazione utente', () => {
-  expect(1).toBe(1);
+  return db.deleteUtente("prova@gmail.com").then(() => console.log("Utente eliminato"));
 });
 

@@ -394,7 +394,10 @@ module.exports.getStatoSensore= function(utenteId,campoId,sensorId) {
 /*         DB - deleteSensore		    */
 /****************************************/
 module.exports.deleteSensore= function(utenteId,campoId,sensorId) {
-	return db.collection("users").doc(utenteId).collection("campi").doc(campoId).collection("sensori").doc(sensorId).delete();
+	return db.collection("users").doc(utenteId).collection("campi").doc(campoId).collection("sensori").doc(sensorId).delete().then( () =>
+	{
+		return db.collection("sensors").doc(sensorId).delete();
+	});
 }
 
 /****************************************/
@@ -402,6 +405,14 @@ module.exports.deleteSensore= function(utenteId,campoId,sensorId) {
 /****************************************/
 module.exports.deleteCampo= function(utenteId,campoId) {
 	return db.collection("users").doc(utenteId).collection("campi").doc(campoId).delete();
+}
+
+
+/****************************************/
+/*         DB - deleteutente		    */
+/****************************************/
+module.exports.deleteUtente= function(utenteId) {
+	return db.collection("users").doc(utenteId).delete();
 }
 
 /****************************************/
