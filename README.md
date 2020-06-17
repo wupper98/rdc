@@ -38,15 +38,14 @@ $ node ./services/sensorsController.js
 ## Test
 I test sono stati effettuati sulle funzioni di interazione con il database. Sono state testate le seguenti funzionalità:
 
-- aggiunta di un utente
-- aggiunta di campo 
-- aggiunta di un sensore
+- aggiunta e rimozione di un utente
+- aggiunta e rimozione di campo 
+- aggiunta e rimozione di un sensore
 
 I test sono stati svolti grazie al modulo [Jest]
 
 Per eseguire i test
 ```sh
-$ cd test
 $ npm run test
 ```
 E' possibile testare varie funzionalità del sito:
@@ -59,12 +58,31 @@ E' possibile testare varie funzionalità del sito:
 - Rilevazioni dei sensori aggiunte su google calendar
 - Funzionamento delle API proprietarie tramite swagger (localhost:8888/api-docs)
 
-## Api
+## API REST
 
-Mettiamo a disposizione le seguienti API Rest:
+Mettiamo a disposizione le seguenti API Rest:
 
-- api 1
-- api 2
+    - GET ​/api​/users​/{userId}​/campi
+    
+Ritorna la lista dei campi dato un utente
+
+    - GET ​/api​/users​/{userId}​/campi​/{campoId}​/sensors
+
+Ritorna la lista dei sensori dato un campo
+
+    - GET ​/api​/users​/{userId}​/campi​/{campoId}​/sensors​/{sensorId}​/rilevazioni
+
+Ritorna la lista le rilevazioni dato un sensore
+
+    - GET ​/api​/meteo​/{città}
+
+Ritorna il meteo data una città
+
+    - GET ​/api​/users​/{userId}​/campi​/{campoId}​/sensors​/{sensorId}​/stato
+
+Ritorna lo stato di un sensore dato un utente, un campo ed un sensore
+
+Per una documentazione più completa e un test è possibile visitare l'url <http://localhost:8888/api-docs>
 
 [//]: # (Abbreviazioni per i link utilizzati nella descrizione del progetto)
 [NodeJS]:   <https://nodejs.org/it/about/>
