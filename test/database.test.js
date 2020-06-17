@@ -34,4 +34,3 @@ test('Eliminazione campo', () => {
 test('Eliminazione utente', () => {
   return db.deleteUtente("prova@gmail.com").then(() => console.log("Utente eliminato"));
 });
-

@@ -84,7 +84,6 @@ module.exports.createCampo =  function (email,nome, lat, lon) { //creo il campo 
 			});
 		}).catch((err) => {console.log(err);});
 	});
-	
 }
 
 

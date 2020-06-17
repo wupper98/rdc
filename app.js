@@ -39,7 +39,7 @@ passport.deserializeUser((userDataFromCookie, done) => {
 	done(null, userDataFromCookie);
 });
 
-// Set up passport strategy
+// Definisce quale provider utilizzare per il login
 passport.use(new GoogleStrategy( {
 		clientID: process.env.GOOGLE_OAUTH_TEST_APP_CLIENT_ID,
 		clientSecret: process.env.GOOGLE_OAUTH_TEST_APP_CLIENT_SECRET,
@@ -55,6 +55,8 @@ passport.use(new GoogleStrategy( {
 		return cb(null, profile);
 }));
 
+// La sessione dell'utente viene creata, ma se NON viene creato un campo allora l'utente non viene salvato nel database
+// questo facilita il controllo sui dati
 app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/', session: true }), (req, res) => {
 	if(TEST) console.log('we authenticated, here is our user object:', req.user);
 	umail = req.user.emails[0].value;

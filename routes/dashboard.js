@@ -33,7 +33,8 @@ router.get('/campo*', (req, res) => {
 			var lon = infoCampo[2].replace(',', '.')
 
 			console.log(sensors);
-	
+			
+			// CHIAMATA API LEAFLET
 			var url = OWM_URL_1 + 'lat=' + lat
 			+ '&lon=' + lon + '&exclude=' + 'minutely,hourly,current' + OWM_URL_2
 	
@@ -78,20 +79,7 @@ router.get('/campo*', (req, res) => {
 	});
 });
 
-/*function addUserWithProm(umail){
-	return new Promise( async function(resolve, reject){
-		await db.createUser(umail);
-		resolve()
-	});
-}
-
-function addCampoWithProm(umail, nome, lat, lon){
-	return new Promise( async function(resolve, reject){
-		await db.createCampo(umail, nome, lat, lon);
-		resolve()
-	});
-}*/
-
+// Consente la creazione di un campo
 router.post('/', async (req, res) => {
 	var umail = req.user.emails[0].value;
 	var nome = req.body.nome;
@@ -121,6 +109,7 @@ router.post('/', async (req, res) => {
 	}
 });
 
+// Creazione di un sensore
 router.post('/addSensore', (req, res) => {
 	var umail = req.user.emails[0].value;
 	sensorName = req.body.sensorName;
@@ -137,6 +126,7 @@ router.post('/addSensore', (req, res) => {
 	}
 });
 
+// Ottiene le rilevazioni relative ad un sensore per costruire il grafico mostrato nella dashboard
 router.get('/getRilevazioni/*',  (req, res) => {
 	var sensorID = req.originalUrl.split('/')[3];
 
