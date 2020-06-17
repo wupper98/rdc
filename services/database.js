@@ -32,7 +32,7 @@ let db = admin.firestore();
 /*************************************/
 /*         Create User Firebase  	 */
 /*************************************/
-
+// Ritorna una promise che consente di attendere la creazione dell'utente
 module.exports.createUser = function (email) { //creo l'utente
 	let instance = db.collection("users").doc(email);
 	return instance.create({campicounter: 0, sensoricounter: 0});
