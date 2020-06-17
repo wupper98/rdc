@@ -65,15 +65,26 @@
             onclick="window.location.replace('http://localhost:<%= port%>/coordConfig');"
             title="aggiungi campo">+</button>
         <br>
-        <div class="w3-center">
-            <a class="log" href="/logout">Logout</a>
+        <div class="w3-container w3-center">
+            <a class="log w3-center" href="/logout">Logout</a>
+            <br>
+            <button class="w3-btn w3-gray w3-right" onclick="confirm_delete()">Cancella account</button>
         </div>
         <% } else{ %>
-        <div class="w3-center">
+        <div class="w3-container w3-center">
             <a class="log" href="/auth/google/callback">Login</a>
         </div>
         <% } %>
     </div>
+
+    <script>
+        function confirm_delete(){
+            var ans = confirm("Sicuro di voler cancellare l'account");
+            if( ans == true ){
+                location.replace("https://www.google.com");
+            }
+        }
+    </script>
 </body>
 
 </html>

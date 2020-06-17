@@ -25,7 +25,7 @@ $ npm install
 ```
 (Ignorare warning sulle vulnerabilità dei package)
 
-### Esecuzione dell'applicazione
+## Esecuzione dell'applicazione
 Per eseguire Agrismart senza avere una console intasata da log è sufficente eseguire il comando:
 ```sh
 $ npm start
@@ -35,7 +35,20 @@ Se si è su una piattaforma windows potrebbe essere necessario avviare separatam
 $ node ./services/sensorsController.js
 ```
 
-### Test
+## Test
+I test sono stati effettuati sulle funzioni di interazione con il database. Sono state testate le seguenti funzionalità:
+
+- aggiunta di un utente
+- aggiunta di campo 
+- aggiunta di un sensore
+
+I test sono stati svolti grazie al modulo [Jest]
+
+Per eseguire i test
+```sh
+$ cd test
+$ npm run test
+```
 E' possibile testare varie funzionalità del sito:
 
 - Login con Google Oauth2
@@ -46,6 +59,12 @@ E' possibile testare varie funzionalità del sito:
 - Rilevazioni dei sensori aggiunte su google calendar
 - Funzionamento delle API proprietarie tramite swagger (localhost:8888/api-docs)
 
+## Api
+
+Mettiamo a disposizione le seguienti API Rest:
+
+- api 1
+- api 2
 
 [//]: # (Abbreviazioni per i link utilizzati nella descrizione del progetto)
 [NodeJS]:   <https://nodejs.org/it/about/>
@@ -54,3 +73,4 @@ E' possibile testare varie funzionalità del sito:
 [MQTT]:     <http://mqtt.org/>
 [HiveMQ]:   <https://www.hivemq.com/>
 [Swagger]:  <https://swagger.io/>
+[Jest]:     <https://jestjs.io/>
