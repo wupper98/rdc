@@ -140,9 +140,6 @@ router.post('/addSensore', (req, res) => {
 router.get('/getRilevazioni/*',  (req, res) => {
 	var sensorID = req.originalUrl.split('/')[3];
 
-	// non riesco a prendere le rilevazioni
-	// magari in un formato sarebbero carine
-
 	db.getRilevazioniFromSensorID(sensorID).then(async (rilevazioni) => {
 		
 		new Promise( function(resolve, reject){

@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js & node services/sensorsController.js",
-    "test": "node app.js true & node services/sensorsController.js"
+    "test": "jest --runInBand"
   },
   "repository": {
     "type": "git",
@@ -43,5 +43,8 @@
     "request": "^2.88.2",
     "swagger-ui-express": "^4.1.4",
     "temporal": "^0.7.1"
+  },
+  "devDependencies": {
+    "jest": "^26.0.1"
   }
 }
