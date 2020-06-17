@@ -29,4 +29,10 @@ router.get('/', (req, res) => {
     }
 });
 
+router.get('/deleteUtente', (req, res) => {
+    db.deleteUtente(req.user.emails[0].value).then(() => {
+        res.redirect("/logout");
+    });
+});
+
 module.exports = router;
